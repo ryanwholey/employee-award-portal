@@ -7,5 +7,5 @@
 1. `npm install`
 1. `npm run api:dev`
 1. In a separate terminal, `npm run frontend:dev`
-1. Head to `http://localhost:4000` (api server) to make ensure you see the homepage
+1. Head to `http://localhost:4000` to ensure you can see the homepage
 

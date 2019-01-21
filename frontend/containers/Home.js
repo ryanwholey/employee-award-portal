@@ -1,6 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
+import './home.css'
+
+
 export default class Home extends React.Component {
 
     static propTypes = {
@@ -32,7 +35,7 @@ export default class Home extends React.Component {
             })
         })
     }
-    
+
     _handleButtonClick = () => {
         this.setState((state) => {
             return {
@@ -40,7 +43,6 @@ export default class Home extends React.Component {
             }
         })
     }
-
 
     _renderData() {
         const {
@@ -69,10 +71,15 @@ export default class Home extends React.Component {
         const buttonText = isButtonOn ? 'Button is on' : 'Button is not on'
 
         return (
-            <div>
+            <div className="home-container">
                 <h1>Homepage</h1>
                 <button onClick={ this._handleButtonClick }>{ buttonText }</button>
                 { this._renderData() }
+                <ul>
+                    <li>first</li>
+                    <li>second</li>
+                    <li>third</li>
+                </ul>
             </div>
         )
     }

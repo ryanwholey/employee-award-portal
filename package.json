@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "api:dev": "NODE_ENV=development nodemon --ignore frontend/ api/index",
+    "api:dev": "NODE_ENV=development nodemon --ignore frontend/ api/server",
     "api:test": "jest --testRegex=api/.*.test.js --setupTestFrameworkScriptFile='<rootDir>/jest/globalSetup.js'",
     "frontend:build": "NODE_ENV=production webpack --config frontend/webpack.config.js",
     "frontend:dev": "NODE_ENV=development webpack-dev-server --config frontend/webpack.config.js",

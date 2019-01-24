@@ -4,6 +4,8 @@ const httpProxy = require('http-proxy');
 const morgan = require('morgan')
 const { OK } = require('http-status-codes')
 
+const knex = require('../db')
+
 const NODE_ENV = process.env.NODE_ENV
 const API_PORT = process.env.API_PORT || (NODE_ENV === 'test' ? 5432 : null) || 4000
 
@@ -45,8 +47,15 @@ app.get('/api/system/check', (req, res) => {
     })
 })
 
+app.get('/api/system/dbconn', (req, res) => {
+    return knex.raw('show tables')
+    .then((data) => {
+        res.status(OK).send()
+    })
+})
+
 function initServer() {
-    return app.listen(API_PORT, (err) => {
+    const server = app.listen(API_PORT, (err) => {
         if (err) {
             console.error(err)
             process.exit(1)
@@ -54,13 +63,33 @@ function initServer() {
 
         console.log(`${NODE_ENV} api started at ${API_PORT}`)
     })
+
+    server.kill = async function kill() {
+        console.log('Shutting server down...')
+        await knex.destroy()
+        await server.close()
+    }
+
+    server.setTimeout(5000)
+
+    return server
 }
 
+let server
 if (require.main === module) {
-    initServer()
+    server = initServer()
 }
+
+process.on('SIGINT', () => {
+    console.log() // newline
+    server.kill()
+})
+
+process.on('unhandledRejection', (error) => {
+    console.log('unhandledRejection', error.message)
+    server.kill()
+});
 
 module.exports = {
-    initServer
+    initServer,
 }
-

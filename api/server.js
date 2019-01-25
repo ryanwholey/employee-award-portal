@@ -4,7 +4,7 @@ const httpProxy = require('http-proxy');
 const morgan = require('morgan')
 const { OK } = require('http-status-codes')
 
-const knex = require('../db')
+const knex = require('../db/knex')
 
 const NODE_ENV = process.env.NODE_ENV
 const API_PORT = process.env.API_PORT || (NODE_ENV === 'test' ? 5432 : null) || 4000

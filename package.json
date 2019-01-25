@@ -9,7 +9,7 @@
     "frontend:build": "NODE_ENV=production webpack --config frontend/webpack.config.js",
     "frontend:dev": "NODE_ENV=development webpack-dev-server --config frontend/webpack.config.js",
     "frontend:test": "jest --testRegex=frontend/.*.test.js",
-    "services:down": "docker-compose -p eap ndown",
+    "services:down": "docker-compose -p eap down",
     "services:up": "docker-compose -p eap up -d "
   },
   "keywords": [],

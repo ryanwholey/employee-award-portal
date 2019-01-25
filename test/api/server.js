@@ -1,4 +1,4 @@
-const { initServer } = require('./server')
+const { initServer } = require('../../api/server')
 const { OK } = require('http-status-codes')
 const request = require('supertest')
 

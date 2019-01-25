@@ -4,7 +4,7 @@ const { OK, BAD_REQUEST } = require('http-status-codes')
 
 const knex = require('../../db/knex')
 
-const router = express.Router();
+const router = express.Router()
 
 router.get('/system/check', (req, res) => {
     return res

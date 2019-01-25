@@ -29,4 +29,14 @@ describe('GET /api/system', () => {
             expect(response.statusCode).toEqual(OK)
         })
     })
+
+    it('should return OK from POST /api/system/post', () => {
+        return request(server)
+        .post('/api/system/post')
+        .send({ name: 'izzy' })
+        .set('Accept', 'application/json')
+        .expect((response) => {
+            expect(response.statusCode).toEqual(OK)
+        })
+    })
 })

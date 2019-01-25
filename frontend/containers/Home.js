@@ -13,7 +13,8 @@ export default class Home extends React.Component {
     state = {
         isButtonOn: false,
         data: null,
-        errors: []
+        errors: [],
+        postStatus: 'not yet posted'
     }
 
     componentDidMount() {
@@ -44,6 +45,36 @@ export default class Home extends React.Component {
         })
     }
 
+    _handlePost = () => {
+        fetch('/api/system/post', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                foo: 'bar'
+            })
+        })
+        .then((res) => {
+            if (res.ok) {
+                return res.json()
+            } else {
+                throw new Error('POST failure')
+            }
+        })
+        .then(() => {
+            this.setState({
+                postStatus: 'SUCCESS'
+            })
+        })
+        .catch((e) => {
+            this.setState({
+                postStatus: 'FAILURE'
+            })
+        })
+
+    }
+
     _renderData() {
         const {
             data,
@@ -64,6 +95,7 @@ export default class Home extends React.Component {
     render() {
         const { 
             isButtonOn,
+            postStatus,
             data,
             errors
         } = this.state
@@ -74,6 +106,7 @@ export default class Home extends React.Component {
             <div className="home-container">
                 <h1>Homepage</h1>
                 <button onClick={ this._handleButtonClick }>{ buttonText }</button>
+                <button onClick={ this._handlePost }>POST status: { postStatus }</button>
                 { this._renderData() }
                 <ul>
                     <li>first</li>

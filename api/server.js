@@ -1,17 +1,23 @@
+const _ = require('lodash')
+const bodyParser = require('body-parser')
 const express = require('express')
-const app = express()
-const httpProxy = require('http-proxy');
-const morgan = require('morgan')
+const httpProxy = require('http-proxy')
 const { OK } = require('http-status-codes')
+const morgan = require('morgan')
 
+const config = require('./config')
 const knex = require('../db/knex')
+const routes = require('./routes')
 
-const NODE_ENV = process.env.NODE_ENV
-const API_PORT = process.env.API_PORT || (NODE_ENV === 'test' ? 5432 : null) || 4000
+const app = express()
 
-app.use(morgan('dev'))
+app.use(morgan(config.LOGGER_SETTINGS))
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({
+    extended: true
+}))
 
-if (NODE_ENV === 'development') {
+if (config.NODE_ENV === 'development') {
     // disable caching in development
     app.set('etag', false)
 
@@ -21,7 +27,7 @@ if (NODE_ENV === 'development') {
     app.use((req, res, next) => {
         
         if (!req.originalUrl.startsWith('/api')) {
-            return proxy.web(req, res, { target: 'http://localhost:8080' })
+            return proxy.web(req, res, { target:  config.WEBPACK_DEV_URL })
         }
 
         next()
@@ -38,30 +44,16 @@ app.get('/api/data', (req, res) => {
     }, 1000)
 })
 
-
-app.get('/api/system/check', (req, res) => {
-    return res
-    .status(OK)
-    .json({
-        status: 'ok'
-    })
-})
-
-app.get('/api/system/dbconn', (req, res) => {
-    return knex.raw('show tables')
-    .then((data) => {
-        res.status(OK).send()
-    })
-})
+app.use(routes)
 
 function initServer() {
-    const server = app.listen(API_PORT, (err) => {
+    const server = app.listen(config.API_PORT, (err) => {
         if (err) {
             console.error(err)
             process.exit(1)
         }
 
-        console.log(`${NODE_ENV} api started at ${API_PORT}`)
+        console.log(`${config.NODE_ENV} api started at ${config.API_PORT}`)
     })
 
     server.kill = async function kill() {
@@ -70,7 +62,7 @@ function initServer() {
         await server.close()
     }
 
-    server.setTimeout(5000)
+    server.setTimeout(config.REQUEST_TIMEOUT)
 
     return server
 }

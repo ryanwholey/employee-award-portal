@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "api:dev": "NODE_ENV=development nodemon --ignore frontend/ api/server",
-    "api:test": "jest --testRegex='test/(api|services)/.*.js' --setupTestFrameworkScriptFile='<rootDir>/test/config/apiSetup.js'",
+    "api:test": "jest --testRegex='test/(api|services)/.*.js' --setupTestFrameworkScriptFile='<rootDir>/test/config/apiSetup.js' --runInBand",
     "frontend:build": "NODE_ENV=production webpack --config frontend/webpack.config.js",
     "frontend:dev": "NODE_ENV=development webpack-dev-server --config frontend/webpack.config.js",
     "frontend:test": "jest --testRegex=test/frontend/.*.js",

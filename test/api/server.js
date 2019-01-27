@@ -13,7 +13,7 @@ describe('GET /api/system', () => {
         return server.close()
     })
 
-    it('should return OK from GET /api/system/check', () => {
+    it('should return 200 from GET /api/system/check', () => {
         return request(server)
         .get('/api/system/check')
         .then((response) => {
@@ -22,7 +22,7 @@ describe('GET /api/system', () => {
         })
     })
 
-    it('should return OK from GET /api/system/dbconn', () => {
+    it('should return 200 from GET /api/system/dbconn', () => {
         return request(server)
         .get('/api/system/dbconn')
         .then((response) => {
@@ -30,7 +30,7 @@ describe('GET /api/system', () => {
         })
     })
 
-    it('should return OK from POST /api/system/post', () => {
+    it('should return 200 from POST /api/system/post', () => {
         return request(server)
         .post('/api/system/post')
         .send({ name: 'izzy' })

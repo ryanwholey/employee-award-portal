@@ -26,7 +26,7 @@ router.get('/users/:id', async (req, res) => {
         if (err.isJoi) {
             return res.status(BAD_REQUEST).json({ error: err.details })
         } else if (err instanceof NotFoundError) {
-            return res.status(NOT_FOUND).json({error: 'User not found'})
+            return res.status(NOT_FOUND).json({ error: 'User not found' })
         }
 
         console.error(err)

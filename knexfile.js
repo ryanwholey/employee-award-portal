@@ -24,7 +24,7 @@ module.exports = {
         connection: {
             host: '127.0.0.1',
             user: 'root',
-            port: '3346',
+            port: process.env.DB_PORT || '3346',
             database: 'eap',
         }
     },

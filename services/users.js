@@ -18,7 +18,7 @@ const createUserSchema = Joi.object().keys({
     first_name: Joi.string().required().label('first_name'),
     last_name: Joi.string().required().label('last_name'),
     password: Joi.string().required().label('password'),
-    isadmin: Joi.number().valid([0, 1]).label('isadmin'),
+    is_admin: Joi.number().valid([0, 1]).label('is_admin'),
     region: [ Joi.number().label('region'), Joi.allow(null) ],
 })
 
@@ -50,7 +50,7 @@ async function getUserById(id) {
         'email',
         'first_name',
         'last_name',
-        'isadmin',
+        'is_admin',
         'region',
     )
     .where({ id })
@@ -67,7 +67,7 @@ async function createUser(attrs) {
     await Joi.validate(attrs, createUserSchema)
 
     const userAttrs = _.pickBy({
-        ..._.pick(attrs, ['email', 'first_name', 'last_name', 'region', 'isadmin']),
+        ..._.pick(attrs, ['email', 'first_name', 'last_name', 'region', 'is_admin']),
         ...getPasswordSaltAndHash(attrs.password),
     }, _.identity)
 

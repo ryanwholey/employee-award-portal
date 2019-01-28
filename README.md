@@ -12,7 +12,7 @@
 1. `nvm use` - Use specific node version in `.nvmrc`
 1. `npm install` - Install dependencies
 1. Duplicate `.env-template` to create `.env` next to the original in the project root, then fill in secrets as needed in `.env`
-1. `npm run services:up` - Start backing services (or start a local mysql server and update your `.env` `DB_CONNECTION_STRING` var)
+1. `npm run services:up` - Start backing services (or start a local mysql server and update your `.env` `DB_<TYPE>` vars as needed)
 1. `npm run db:init && npx knex migrate:latest` - Initialize database and run migrations
 1. `npm run api:dev` - Start API dev server
 1. `npm run frontend:dev` - In a separate terminal, start webpack frontend

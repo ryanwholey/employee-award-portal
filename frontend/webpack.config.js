@@ -16,6 +16,7 @@ function getPlugins(env) {
 
 module.exports = {
     mode: NODE_ENV || 'production',
+    devtool: NODE_ENV === 'production' ? 'source-map' : 'cheap-module-eval-source-map',
     entry: path.resolve(__dirname, './index'),
     output: {
         path: path.resolve(__dirname, './build'),

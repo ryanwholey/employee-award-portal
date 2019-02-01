@@ -1,6 +1,11 @@
 const jwt = require('jsonwebtoken')
 
 function verifyToken(token) {
+
+    if (!process.env.JWT_SECRET) {
+        throw new Error('No JWT_SECRET set, please update .env')
+    }
+
     return new Promise((resolve, reject) => {
 
         jwt.verify(token, process.env.JWT_SECRET, (err, data) => {
@@ -13,6 +18,10 @@ function verifyToken(token) {
 }
 
 function createToken(tokenPayload, options = {}) {
+    if (!process.env.JWT_SECRET) {
+        throw new Error('No JWT_SECRET set, please update .env')
+    }
+
     return new Promise((resolve) => {
         const defaultOptions = {
             expiresIn: 3600,

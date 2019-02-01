@@ -1,8 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import Credentials from '../components/Credentials'
+import Cookies from 'universal-cookie'
+import { fetchGet, fetchPost } from '../utils/http'
 
 import './home.css'
-
 
 export default class Home extends React.Component {
 
@@ -10,29 +12,31 @@ export default class Home extends React.Component {
         passedProp: PropTypes.string.isRequired
     }
 
+    cookies = new Cookies()
+
     state = {
         isButtonOn: false,
         data: null,
         errors: [],
-        postStatus: 'not yet posted'
+        postStatus: 'not yet posted',
+        email: '',
+        password: '',
+        secretData: '',
+        token: ''
     }
 
     componentDidMount() {
-        fetch('/api/data')
-        .then(res => {
-            if (res.ok) {
-                return res.json()
-            } else {
-                this.setState((state) => {
-                    return {
-                        errors: [...state.errors, 'ERROR_FETCHING_DATA']
-                    }
-                })
-            }
-        })
+        fetchGet('/api/data')
         .then((res) => {
             this.setState({
                 data: res.data
+            })
+        })
+        .catch(() => {
+            this.setState((state) => {
+                return {
+                    errors: [...state.errors, 'ERROR_FETCHING_DATA']
+                }
             })
         })
     }
@@ -46,22 +50,7 @@ export default class Home extends React.Component {
     }
 
     _handlePost = () => {
-        fetch('/api/system/post', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                foo: 'bar'
-            })
-        })
-        .then((res) => {
-            if (res.ok) {
-                return res.json()
-            } else {
-                throw new Error('POST failure')
-            }
-        })
+        fetchPost('/api/system/post', { foo: 'bar'})
         .then(() => {
             this.setState({
                 postStatus: 'SUCCESS'
@@ -72,7 +61,6 @@ export default class Home extends React.Component {
                 postStatus: 'FAILURE'
             })
         })
-
     }
 
     _renderData() {
@@ -92,12 +80,56 @@ export default class Home extends React.Component {
         return data.map((item, index) => <div key={ index }>{ item }</div>)
     }
 
+    _handleFormChange = (type) => (e) => {
+        this.setState({
+            [type]: e.target.value
+        })
+    }
+
+    _handleSubmit = (e) => {
+        e.preventDefault()
+
+        const {
+            email,
+            password,
+        } = this.state
+
+        fetchPost('/api/login', { email, password })
+        .then((res) => {
+            this.cookies.set('eap-token', res.token, { path: '/' })
+        })
+        .catch((e) => {
+            console.error(e.message)
+        })
+    }
+
+    _getSecretData = (e) => {
+        e.preventDefault()
+
+        fetchGet('/api/secret')
+        .then((secretData) => {
+            this.setState({ secretData })
+        })
+        .catch(() => {
+            this.setState({
+                secretData: 'NOPE'
+            })
+        })
+    }
+
+    _handleLogout = () => {
+        this.cookies.remove('eap-token', { path: '/' })
+    }
+
     render() {
         const { 
             isButtonOn,
             postStatus,
             data,
-            errors
+            secretData,
+            errors,
+            email,
+            password,
         } = this.state
 
         const buttonText = isButtonOn ? 'Button is on' : 'Button is not on'
@@ -113,6 +145,16 @@ export default class Home extends React.Component {
                     <li>second</li>
                     <li>third</li>
                 </ul>
+                <form >
+                    <label htmlFor="email">Email</label>
+                    <input id="email" value={ email } onChange={ this._handleFormChange('email') } autoComplete="off" />
+                    <label htmlFor="password">Password</label>
+                    <input id="password" value={ password } onChange={ this._handleFormChange('password') } autoComplete="off" />
+                    <button onClick={ this._handleSubmit } type="submit">Submit </button>
+                </form>
+                <button onClick={ this._getSecretData }>Get Secret Data</button>
+                <button onClick={ this._handleLogout }>logout</button>
+                <div>{ JSON.stringify(secretData) }</div>
             </div>
         )
     }

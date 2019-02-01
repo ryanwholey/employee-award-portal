@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import Credentials from '../components/Credentials'
 import Cookies from 'universal-cookie'
 import { fetchGet, fetchPost } from '../utils/http'
 

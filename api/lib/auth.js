@@ -28,23 +28,7 @@ function createToken(tokenPayload, options = {}) {
     })
 }
 
-function getTokenFromRequest(req) {
-    let token
-    if (req.headers.authorization) {
-        const [ type, payload ] = req.headers.authorization.split(' ')
-
-        if (type === 'Bearer') {
-            token = payload
-        }
-    } else if (req.query.token) {
-        token = req.query.token
-    }
-
-    return token
-}
-
 module.exports = {
     createToken,
-    getTokenFromRequest,
     verifyToken,
 }

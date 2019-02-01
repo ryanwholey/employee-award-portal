@@ -23,6 +23,7 @@ jobs:
           DB_HOST: 127.0.0.1
           DB_USER: root
           DB_PORT: 3306
+          IS_CI: true
   
       - image: circleci/mysql:5.7
         environment:

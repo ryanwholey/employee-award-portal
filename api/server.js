@@ -44,6 +44,12 @@ app.get('/api/data', (req, res) => {
     }, 1000)
 })
 
+// Testing auth middleware, remove soon
+const authMiddleware = require('./middleware/auth').verifyTokenMidleware
+app.get('/api/secret', authMiddleware, (req, res) => {
+    res.status(200).json({ data: 'this is secret!', ...req.user })
+})
+
 app.use(routes)
 
 function initServer() {

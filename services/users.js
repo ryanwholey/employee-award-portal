@@ -85,8 +85,26 @@ async function createUser(attrs) {
     }
 }
 
+async function getUserByEmailAndPassword(email, password) {
+    // todo implement real password retrieval
+    return knex('users').where({ email })
+    .then((users) => {
+        const [ user ] = users
+
+        if (!user) {
+            throw new Error('No user found')
+        }
+
+        return user
+    })
+    .catch(() => {
+        return null
+    })
+}
+
 module.exports = {
     getPasswordSaltAndHash,
+    getUserByEmailAndPassword,
     getUserById,
     createUser,
     createUserSchema,

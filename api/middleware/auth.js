@@ -11,12 +11,8 @@ async function verifyTokenMidleware(req, res, next) {
     if (cookieToken) {
         token = cookieToken
     // otherwise check bearer authorization for token
-    } else if (req.headers.authorization) {
-        const [ type, payload ] = req.headers.authorization.split(' ')
-
-        if (type === 'Bearer') {
-            token = payload
-        }
+    } else if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
+        token = req.headers.authorization.split(' ')[1]
     // finally check query params for token
     } else if (req.query.token) {
         token = req.query.token

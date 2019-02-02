@@ -24,7 +24,7 @@ jobs:
           DB_USER: root
           DB_PORT: 3306
           IS_CI: true
-  
+          JWT_SECRET: d055859a-359a-49ea-8608-4339755a9290
       - image: circleci/mysql:5.7
         environment:
           MYSQL_ALLOW_EMPTY_PASSWORD: true

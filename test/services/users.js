@@ -5,7 +5,7 @@ const knex = require('../../db/knex')
 const { NotFoundError, DuplicateEntryError } = require('../../services/errors')
 const userService = require('../../services/users')
 
-describe('UserService', () => {
+describe('User service', () => {
     describe('getUserById', () => {
         it('should get a user by id', () => {
             return createUser()
@@ -64,9 +64,13 @@ describe('UserService', () => {
         })
 
         it('should return null if user is not found', async () => {
-            const queriedUser = await userService.getUserByEmail('fake@email.com')
+            expect.assertions(1)
 
-            expect(queriedUser).toEqual(null)
+            try {
+                await userService.getUserByEmail('fake@email.com')
+            } catch (err) {
+                expect(err).toBeInstanceOf(NotFoundError)
+            }
         })
     })
 })

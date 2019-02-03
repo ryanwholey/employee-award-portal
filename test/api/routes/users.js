@@ -1,7 +1,7 @@
 const { BAD_REQUEST, CONFLICT, NOT_FOUND, OK } = require('http-status-codes')
 const request = require('supertest')
 
-const getJoiError = require('../../utils/getJoiError')
+const getJoiError = require('../../testUtils/getJoiError')
 const { DuplicateEntryError } = require('../../../services/errors')
 const userService = require('../../../services/users')
 const { initServer } = require('../../../api/server')

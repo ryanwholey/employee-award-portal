@@ -85,9 +85,9 @@ async function createUser(attrs) {
     }
 }
 
-async function getUserByEmailAndPassword(email, password) {
-    // todo implement real password retrieval
-    return knex('users').where({ email })
+async function getUserByEmail(email) {
+    return knex('users')
+    .where({ email })
     .then((users) => {
         const [ user ] = users
 
@@ -102,10 +102,37 @@ async function getUserByEmailAndPassword(email, password) {
     })
 }
 
+async function getUserByEmailAndPassword(email, password) {
+    // todo implement real password retrieval
+    return knex('users')
+    .where({ email })
+    .then((users) => {
+        const [ user ] = users
+
+        if (!user) {
+            throw new Error('No user found')
+        }
+
+        return user
+    })
+    .catch(() => {
+        return null
+    })
+}
+
+async function changePassword(userId, password) {
+    return knex('users')
+    .where({ id: userId })
+    // todo implement real password hash
+    .update({ passhash: password })
+}
+
 module.exports = {
-    getPasswordSaltAndHash,
-    getUserByEmailAndPassword,
-    getUserById,
+    changePassword,
     createUser,
     createUserSchema,
+    getPasswordSaltAndHash,
+    getUserByEmail,
+    getUserByEmailAndPassword,
+    getUserById,
 }

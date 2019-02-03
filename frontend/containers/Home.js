@@ -93,7 +93,7 @@ export default class Home extends React.Component {
             password,
         } = this.state
 
-        fetchPost('/api/login', { email, password })
+        fetchPost('/api/login_tokens', { email, password })
         .then((res) => {
             this.cookies.set('eap-token', res.token, { path: '/' })
         })

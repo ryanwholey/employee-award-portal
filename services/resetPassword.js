@@ -28,7 +28,7 @@ async function isFlowTokenValid(flowToken, userId) {
     const hourAgo = moment(new Date()).subtract(1,'hour')
     const [ token ] = await knex('password_reset_flow_token')
     .where({ 
-        user_id: userId, 
+        user_id: userId,
         flow_token: flowToken,
     })
     .where('ctime', '>=', dateUtil.formatMySQLDatetime(hourAgo))
@@ -43,7 +43,7 @@ async function sendResetPasswordEmail(email, userId) {
     return emailer.send({ 
         email,
         subject: 'Reset Password',
-        message: `http://${process.env.API_HOST}:${process.env.API_PORT}/change_password?flow_token=${flowToken}&user_id=${userId}`,
+        message: `http://${process.env.API_HOST}:${process.env.API_PORT}/reset_password?flow_token=${flowToken}&user_id=${userId}`,
     })
 }
 

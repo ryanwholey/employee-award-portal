@@ -7,6 +7,7 @@ exports.up = function(knex, Promise) {
         table.string('flow_token').notNullable()
         table.integer('user_id').notNullable()
         table.foreign('user_id').references('users.id')
+        table.index('user_id')
     })
 }
 

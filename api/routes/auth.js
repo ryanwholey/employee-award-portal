@@ -4,11 +4,12 @@ const { BAD_REQUEST, OK, UNAUTHORIZED } = require('http-status-codes')
 const Joi = require('joi')
 
 const authLib = require('../lib/auth')
-const userService = require('../../services/users')
 const resetPasswordService = require('../../services/resetPassword')
+const userService = require('../../services/users')
+
 const router = express.Router()
 
-router.post('/login', async (req, res) => {
+router.post('/login_tokens', async (req, res) => {
     const loginSchema = Joi.object().keys({
         email: Joi.string().required().email({ minDomainAtoms: 2 }).label('email'),
         password: Joi.string().required().label('password'),
@@ -39,7 +40,7 @@ router.post('/login', async (req, res) => {
     return res.status(OK).json({ token })
 })
 
-router.post('/forgotPassword', async (req, res) => {
+router.post('/forgot_password', async (req, res) => {
     const forgotEmailSchema = Joi.object().keys({
         email: Joi.string().required().email({ minDomainAtoms: 2 }).label('email'),
     })
@@ -63,7 +64,7 @@ router.post('/forgotPassword', async (req, res) => {
     res.status(OK).send()
 })
 
-router.post('/resetPassword', async (req, res) => {
+router.post('/reset_password', async (req, res) => {
     const forgotEmailSchema = Joi.object().keys({
         flow_token: Joi.string().required().label('flow_token'),
         user_id: Joi.number().required().label('user_id'),

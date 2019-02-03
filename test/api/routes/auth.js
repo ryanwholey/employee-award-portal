@@ -7,7 +7,7 @@ const { initServer } = require('../../../api/server')
 const { getMockUser } = require('../../mocks')
 
 
-describe('POST /api/login', () => {
+describe('POST /api/login_tokens', () => {
 
     let server
 
@@ -21,7 +21,7 @@ describe('POST /api/login', () => {
 
     it('should respond with BAD_REQUEST when email is missing', () => {
         return request(server)
-        .post('/api/login')
+        .post('/api/login_tokens')
         .send({ password: 'pw123' })
         .set('Accept', 'application/json')
         .expect((response) => {
@@ -31,7 +31,7 @@ describe('POST /api/login', () => {
 
     it('should respond with BAD_REQUEST when password is missing', () => {
         return request(server)
-        .post('/api/login')
+        .post('/api/login_tokens')
         .send({ email: 'mel@email.com' })
         .set('Accept', 'application/json')
         .expect((response) => {
@@ -41,7 +41,7 @@ describe('POST /api/login', () => {
 
     it('should respond with UNAUTHORIZED login fails', () => {
         return request(server)
-        .post('/api/login')
+        .post('/api/login_tokens')
         .send({ 
             email: 'connor@email.com',
             password: 'pw123',
@@ -68,7 +68,7 @@ describe('POST /api/login', () => {
 
         it('should respond with OK when login succeeds', () => {
             return request(server)
-            .post('/api/login')
+            .post('/api/login_tokens')
             .send({ 
                 email: 'connor@email.com',
                 password: 'pw123',
@@ -82,7 +82,7 @@ describe('POST /api/login', () => {
     })
 })
 
-describe('POST /api/forgotPassword', () => {
+describe('POST /api/forgot_password', () => {
 
     let server
 
@@ -96,7 +96,7 @@ describe('POST /api/forgotPassword', () => {
 
     it('should respond with BAD_REQUEST when email is not present', () => {
         return request(server)
-        .post('/api/forgotPassword')
+        .post('/api/forgot_password')
         .send({})
         .set('Accept', 'application/json')
         .expect((response) => {
@@ -125,7 +125,7 @@ describe('POST /api/forgotPassword', () => {
 
         it('should call resetPasswordService.sendResetPasswordEmail', () => {
             return request(server)
-            .post('/api/forgotPassword')
+            .post('/api/forgot_password')
             .send({ email: mockUser.email, })
             .set('Accept', 'application/json')
             .expect((response) => {
@@ -136,7 +136,7 @@ describe('POST /api/forgotPassword', () => {
     })
 })
 
-describe('POST /api/resetPassword', () => {
+describe('POST /api/reset_password', () => {
     let server
 
     beforeEach(() => {
@@ -149,7 +149,7 @@ describe('POST /api/resetPassword', () => {
 
     it('should respond with BAD_REQUEST when flow_token is missing', () => {
         return request(server)
-        .post('/api/resetPassword')
+        .post('/api/reset_password')
         .send({ 
             user_id: '12345', 
             password: 'pw123',
@@ -162,7 +162,7 @@ describe('POST /api/resetPassword', () => {
 
     it('should respond with BAD_REQUEST when user_id is missing', () => {
         return request(server)
-        .post('/api/resetPassword')
+        .post('/api/reset_password')
         .send({ 
             flow_token: '12345', 
             password: 'pw123',
@@ -175,7 +175,7 @@ describe('POST /api/resetPassword', () => {
 
     it('should respond with BAD_REQUEST when password is missing', () => {
         return request(server)
-        .post('/api/resetPassword')
+        .post('/api/reset_password')
         .send({ 
             flow_token: '12345', 
             user_id: '12345', 
@@ -200,7 +200,7 @@ describe('POST /api/resetPassword', () => {
 
         it('should respond with UNAUTHORIZED if token is invalid', () => {
             return request(server)
-            .post('/api/resetPassword')
+            .post('/api/reset_password')
             .send({ 
                 flow_token: '6789', 
                 user_id: '12345', 
@@ -233,7 +233,7 @@ describe('POST /api/resetPassword', () => {
 
         it('should respond with OK if token is invalid', () => {
             return request(server)
-            .post('/api/resetPassword')
+            .post('/api/reset_password')
             .send({ 
                 flow_token: '6789', 
                 user_id: '12345', 
@@ -271,7 +271,7 @@ describe('POST /api/resetPassword', () => {
 
         it('should respond with OK if token is invalid', () => {
             return request(server)
-            .post('/api/resetPassword')
+            .post('/api/reset_password')
             .send({ 
                 flow_token: '6789', 
                 user_id: '12345', 

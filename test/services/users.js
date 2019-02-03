@@ -1,6 +1,6 @@
 const _ = require('lodash')
 
-const createTestUser = require('../utils/createUser')
+const createUser = require('../testUtils/createUser')
 const knex = require('../../db/knex')
 const { NotFoundError, DuplicateEntryError } = require('../../services/errors')
 const userService = require('../../services/users')
@@ -8,7 +8,7 @@ const userService = require('../../services/users')
 describe('UserService', () => {
     describe('getUserById', () => {
         it('should get a user by id', () => {
-            return createTestUser()
+            return createUser()
             .then((user) => {
                 return Promise.all([
                     user,
@@ -42,7 +42,7 @@ describe('UserService', () => {
     describe('createUser', () => {
         it('should throw DuplicateEntryError when duplicate entries are created', () => {
             expect.hasAssertions()
-            return createTestUser({ password: 'fromage' })
+            return createUser({ password: 'fromage' })
             .then((user) => {
                 return userService.createUser({
                     ..._.pick(user, ['first_name', 'last_name', 'email']),
@@ -52,6 +52,21 @@ describe('UserService', () => {
             .catch((err) => {
                 expect(err).toBeInstanceOf(DuplicateEntryError)
             })
+        })
+    })
+
+    describe('getUserByEmail', () => {
+        it('should return a user if found', async () => {
+            const user = await createUser()
+            const queriedUser = await userService.getUserByEmail(user.email)
+
+            expect(queriedUser.id).toEqual(user.id)
+        })
+
+        it('should return null if user is not found', async () => {
+            const queriedUser = await userService.getUserByEmail('fake@email.com')
+
+            expect(queriedUser).toEqual(null)
         })
     })
 })

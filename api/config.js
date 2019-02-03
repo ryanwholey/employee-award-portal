@@ -1,7 +1,7 @@
 require('dotenv').config()
 
 const config = {
-    API_PORT: process.env.API_PORT || (process.env.NODE_ENV === 'test' ? 5432 : null) || 4000,
+    API_PORT: (process.env.NODE_ENV === 'test' ? 5432 : null) || process.env.API_PORT || 4000,
     NODE_ENV: process.env.NODE_ENV,
     LOGGER_SETTINGS: 'dev',
     REQUEST_TIMEOUT: 5000,

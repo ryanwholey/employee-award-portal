@@ -44,6 +44,17 @@ app.get('/api/data', (req, res) => {
     }, 1000)
 })
 
+/* json in the client request body should include:
+    - "type": the award type
+    - "creator": email address of the award creator
+    - "recipient": email address of the recipient
+    - "granted": date the award will be granted, format = mm/dd/yyyy
+       (defaults to current date if omitted) */
+app.post('/api/awards', (req) => {
+    const award = createAward(req)
+        .then(awardSuccess, awardFailed);
+});
+
 // Testing auth middleware, remove soon
 const authMiddleware = require('./middleware/auth').verifyTokenMidleware
 app.get('/api/secret', authMiddleware, (req, res) => {

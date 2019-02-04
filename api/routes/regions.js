@@ -16,10 +16,10 @@ const { DuplicateEntryError, NotFoundError } = require('../../services/errors')
 const router = express.Router()
 
 router.get('/regions/:id', async (req, res) => {
-    const createRregionSchema = Joi.number().required().label('id')
+    const getRegionSchema = Joi.number().required().label('id')
 
     try {
-        await Joi.validate(req.params.id, createRregionSchema)
+        await Joi.validate(req.params.id, getRegionSchema)
     } catch (err) {
         return res.status(BAD_REQUEST).send(err.message)
     }
@@ -58,12 +58,12 @@ router.get('/regions', async (req, res) => {
 })
 
 router.post('/regions', async (req, res) => {
-    const createRregionSchema = Joi.object().keys({
+    const createRegionSchema = Joi.object().keys({
         description: Joi.string().required().label('description'),
     })
 
     try {
-        await Joi.validate(req.body, createRregionSchema)
+        await Joi.validate(req.body, createRegionSchema)
     } catch (err) {
         return res.status(BAD_REQUEST).send(err.message)
     }

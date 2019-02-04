@@ -20,7 +20,7 @@ async function getRegionById(regionId) {
     return region
 }
 
-async function getRegions(pageOptions) {
+async function getRegions(pageOptions = {}) {
     const defaultPageOptions = {
         pageSize: 10,
         page: 1,

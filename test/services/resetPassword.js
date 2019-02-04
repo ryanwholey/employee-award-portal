@@ -1,7 +1,7 @@
 const moment = require('moment')
 
 const resetPasswordService = require('../../services/resetPassword')
-const createUser = require('../testUtils/createUser') 
+const { createUser } = require('../testUtils/entityFactory') 
 const knex = require('../../db/knex')
 const emailer = require('../../lib/emailer')
 const dateUtil = require('../../utils/date')

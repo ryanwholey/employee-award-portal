@@ -5,7 +5,7 @@ const resetPasswordService = require('../../../services/resetPassword')
 const userService = require('../../../services/users')
 const { initServer } = require('../../../api/server')
 const { getMockUser } = require('../../mocks')
-const createUser = require('../../testUtils/createUser')
+const { createUser } = require('../../testUtils/entityFactory')
 
 
 describe('POST /api/login_tokens', () => {

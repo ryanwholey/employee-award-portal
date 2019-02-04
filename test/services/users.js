@@ -1,6 +1,6 @@
 const _ = require('lodash')
 
-const createUser = require('../testUtils/createUser')
+const { createUser } = require('../testUtils/entityFactory')
 const knex = require('../../db/knex')
 const { NotFoundError, DuplicateEntryError } = require('../../services/errors')
 const userService = require('../../services/users')

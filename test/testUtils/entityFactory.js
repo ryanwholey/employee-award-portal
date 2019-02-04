@@ -1,4 +1,5 @@
 const { createUser } = require('../../services/users')
+const { createRegion } = require('../../services/regions')
 
 function getRandomString(len=7) {
     return Math.random().toString(36).substring(len)
@@ -21,4 +22,20 @@ async function createTestUser(attrs) {
     return createUser(userAttrs)
 }
 
-module.exports = createTestUser
+async function createTestRegion(attrs) {
+    const defaultAttrs = {
+        description: getRandomString(),
+    }
+
+    const regionAttrs = {
+        ...defaultAttrs,
+        ...attrs,
+    }
+
+    return createRegion(regionAttrs)
+}
+
+module.exports = {
+    createUser: createTestUser,
+    createRegion: createTestRegion,
+}

@@ -1,14 +1,16 @@
 const express = require('express')
 const router = express.Router()
 
+const authRoutes = require('./auth')
+const regionRoutes = require('./regions')
 const systemRoutes = require('./system')
 const userRoutes = require('./users')
-const authRoutes = require('./auth')
 
 const routes = [
+    authRoutes,
+    regionRoutes,
     systemRoutes,
     userRoutes,
-    authRoutes,
 ]
 
 routes.forEach(route => router.use('/api', route))

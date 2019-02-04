@@ -35,7 +35,7 @@ describe('/api/users routes', () => {
             .get(`/api/users/${userId}`)
             .then((response) => {
                 expect(response.statusCode).toEqual(OK)
-                expect(response.body).toEqual(mockUser)
+                expect(response.body).toEqual({ data: mockUser })
             })
         })
 

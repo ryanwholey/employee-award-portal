@@ -1,13 +1,14 @@
 const _ = require('lodash')
 const bodyParser = require('body-parser')
 const express = require('express')
-const httpProxy = require('http-proxy')
 const { OK } = require('http-status-codes')
 const morgan = require('morgan')
 
 const config = require('./config')
 const knex = require('../db/knex')
 const routes = require('./routes')
+const routingMiddleware = require('./middleware/routing')
+
 
 const app = express()
 
@@ -21,19 +22,9 @@ if (config.NODE_ENV === 'development') {
     // disable caching in development
     app.set('etag', false)
 
-    // send non api requests to webpack-dev-server
-    const proxy = httpProxy.createProxyServer()
-
-    app.use((req, res, next) => {
-        
-        if (!req.originalUrl.startsWith('/api')) {
-            return proxy.web(req, res, { target:  config.WEBPACK_DEV_URL })
-        }
-
-        next()
-    })
+    app.use(routingMiddleware.devRouter)
 } else {
-    // route static production assets
+    app.use(routingMiddleware.prodRouter)
 }
 
 app.get('/api/data', (req, res) => {

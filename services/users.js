@@ -99,6 +99,10 @@ async function getUserByEmailAndPassword(email, password) {
     } catch (err) {
         return null
     }
+
+    if (!user) {
+        return null
+    }
     
     const isCorrect = await bcrypt.compare(password, user.passhash)
 

@@ -1,6 +1,7 @@
 require('dotenv').config()
 
 const baseConfig = {
+    client: 'mysql',
     migrations: {
         tableName: 'migrations',
         directory: 'db/migrations',
@@ -10,7 +11,6 @@ const baseConfig = {
 module.exports = {
     development: {
         ...baseConfig,
-        client: 'mysql',
         connection: {
             host: process.env.DB_HOST,
             user: process.env.DB_USER,
@@ -20,7 +20,6 @@ module.exports = {
     },
     test: {
         ...baseConfig,
-        client: 'mysql',
         connection: {
             host: '127.0.0.1',
             user: 'root',
@@ -30,12 +29,11 @@ module.exports = {
     },
     production: {
         ...baseConfig,
-        client: 'mysql',
         connection: {
             host: process.env.DB_HOST,
             user: process.env.DB_USER,
-            password: process.env.DB_PASS,
-            database: process.env.DB_NAME,
+            port: process.env.DB_PORT,
+            database: 'eap',
         }
-    }
+    },
 }

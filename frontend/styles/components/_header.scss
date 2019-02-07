@@ -1,0 +1,15 @@
+// Header Parent Container
+
+.header {
+  border-bottom: .3rem solid darken($color5, 5%);
+}
+
+.header__title {
+  margin: 0;
+}
+
+.header__subtitle {
+  font-size: $m-size;
+  font-weight: 500;
+  margin: 0;
+}

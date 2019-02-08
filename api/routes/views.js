@@ -22,6 +22,7 @@ function getAsset(fileName, cache) {
     if (cache[fileName]) {
         content = cache[fileName]
     } else {
+        // TODO promisify
         content = fs.readFileSync(fileName, 'utf8')
         cache[fileName] = content
     }

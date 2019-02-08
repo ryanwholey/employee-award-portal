@@ -1,10 +1,11 @@
 const express = require('express')
+const fs = require('fs')
 const httpProxy = require('http-proxy')
+const { INTERNAL_SERVER_ERROR, NOT_FOUND, OK } = require('http-status-codes')
 const mime = require('mime')
 const path = require('path')
-const fs = require('fs')
+
 const config = require('../config')
-const { INTERNAL_SERVER_ERROR, NOT_FOUND, OK } = require('http-status-codes')
 
 const router = express.Router()
 

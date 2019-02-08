@@ -7,7 +7,6 @@ const regionRoutes = require('./regions')
 const systemRoutes = require('./system')
 const userRoutes = require('./users')
 const viewRoutes = require('./views')
-const path = require('path')
 
 const apiRoutes = [
     authRoutes,

@@ -29,8 +29,8 @@ describe('view routing tests', () => {
         })
     })
 
-    it('should allow a logged in user to see a page' () => {})
-    it('should redirect a user when requesting an admin page' () => {})
+    it('should allow a logged in user to see a page', () => {})
+    it('should redirect a user when requesting an admin page', () => {})
     it('should redirect an admin who tries to see a regular page', () => {})
     it('should not redirect an admin who tries to see an admin page', () => {})
 })

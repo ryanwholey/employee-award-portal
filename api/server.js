@@ -7,8 +7,7 @@ const morgan = require('morgan')
 const config = require('./config')
 const knex = require('../db/knex')
 const routes = require('./routes')
-const routingMiddleware = require('./middleware/routing')
-
+const authMiddleware = require('./middleware/auth')
 
 const app = express()
 
@@ -18,28 +17,12 @@ app.use(bodyParser.urlencoded({
     extended: true
 }))
 
+app.use(authMiddleware.convertTokenToUser)
+
 if (config.NODE_ENV === 'development') {
     // disable caching in development
     app.set('etag', false)
-
-    app.use(routingMiddleware.devRouter)
-} else {
-    app.use(routingMiddleware.prodRouter)
 }
-
-app.get('/api/data', (req, res) => {
-    setTimeout(() => {
-        return res
-        .status(OK)
-        .json({ data: [ 'foo', 'bar', 'baz' ] })
-    }, 1000)
-})
-
-// Testing auth middleware, remove soon
-const authMiddleware = require('./middleware/auth').verifyTokenMidleware
-app.get('/api/secret', authMiddleware, (req, res) => {
-    res.status(200).json({ data: 'this is secret!', ...req.user })
-})
 
 app.use(routes)
 
@@ -75,7 +58,8 @@ process.on('SIGINT', () => {
 })
 
 process.on('unhandledRejection', (error) => {
-    console.log('unhandledRejection', error.message)
+    console.error('unhandledRejection', error.message)
+    console.error(error.stack)
     server.kill()
 });
 

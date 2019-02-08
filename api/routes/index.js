@@ -6,8 +6,10 @@ const awardTypeRoutes = require('./awardTypes')
 const regionRoutes = require('./regions')
 const systemRoutes = require('./system')
 const userRoutes = require('./users')
+const viewRoutes = require('./views')
+const path = require('path')
 
-const routes = [
+const apiRoutes = [
     authRoutes,
     awardTypeRoutes,
     regionRoutes,
@@ -15,6 +17,8 @@ const routes = [
     userRoutes,
 ]
 
-routes.forEach(route => router.use('/api', route))
+apiRoutes.forEach(route => router.use('/api', route))
+
+router.use(viewRoutes)
 
 module.exports = router

@@ -8,6 +8,7 @@ const morgan = require('morgan')
 const config = require('./config')
 const knex = require('../db/knex')
 const routes = require('./routes')
+const awards = require('../lib/awards.js')
 
 const app = express()
 
@@ -50,9 +51,23 @@ app.get('/api/data', (req, res) => {
     - "recipient": email address of the recipient
     - "granted": date the award will be granted, format = mm/dd/yyyy
        (defaults to current date if omitted) */
-app.post('/api/awards', (req) => {
-    const award = createAward(req)
-        .then(awardSuccess, awardFailed);
+app.post('/api/awards', (req, res) => {
+    const params = {
+        "type": req.body.type,
+        "creator": req.body.creator,
+        "recipient": req.body.recipient,
+        "granted": req.body.granted
+    };
+
+    awards.createAward(params)
+        .then(() => {
+            console.log("Yay! the award was created");
+            res.status(201).send('Award was created');
+        })
+        .catch(() => {
+            console.log('Error creating award');
+            res.status(501).send('Error creating award');
+        });
 });
 
 // Testing auth middleware, remove soon

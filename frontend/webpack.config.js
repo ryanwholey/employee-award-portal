@@ -19,7 +19,7 @@ module.exports = {
     devtool: NODE_ENV === 'production' ? 'source-map' : 'cheap-module-eval-source-map',
     entry: path.resolve(__dirname, './index'),
     output: {
-        path: path.resolve(__dirname, './build'),
+        path: path.resolve(__dirname, './static'),
         filename: 'bundle.js',
         publicPath: '/static'
     },

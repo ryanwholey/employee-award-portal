@@ -33,14 +33,6 @@ if (config.NODE_ENV === 'development') {
     app.set('etag', false)
 }
 
-app.get('/api/data', (req, res) => {
-    setTimeout(() => {
-        return res
-        .status(OK)
-        .json({ data: [ 'foo', 'bar', 'baz' ] })
-    }, 1000)
-})
-
 /* json in the client request body should include:
     - "type": the award type
     - "creator": email address of the award creator
@@ -77,12 +69,6 @@ app.get('/api/awards/', (req, res) => {
             res.status(501).send('Error selecting awards. Val = ' + val);
         })
 });
-
-// Testing auth middleware, remove soon
-const authMiddleware = require('./middleware/auth').verifyTokenMidleware
-app.get('/api/secret', authMiddleware, (req, res) => {
-    res.status(200).json({ data: 'this is secret!', ...req.user })
-})
 
 app.use(routes)
 

@@ -4,13 +4,21 @@ const express = require('express')
 const httpProxy = require('http-proxy')
 const { OK } = require('http-status-codes')
 const morgan = require('morgan')
+const cron = require("node-cron");
+const moment = require('moment');
 
 const config = require('./config')
 const knex = require('../db/knex')
 const routes = require('./routes')
-const awards = require('../lib/awards.js')
+const awards = require('../lib/awards.js');
+const dbreader = require('../lib/dbreader.js');
 
-const app = express()
+const app = express();
+
+cron.schedule("* * * * *", function() {
+    console.log('I did a thing at ' + moment(Date.now()).format('hh:mm:ss'));
+    dbreader.selectAwards();
+});
 
 app.use(morgan(config.LOGGER_SETTINGS))
 app.use(bodyParser.json())
@@ -68,6 +76,18 @@ app.post('/api/awards', (req, res) => {
             console.log('Error creating award');
             res.status(501).send('Error creating award');
         });
+});
+
+app.get('/api/awards/', (req, res) => {
+    dbreader.selectAwards()
+        .then(val => {
+            console.log("Finished selecting awards");
+            res.status(203).send("Check console for selections. Val = " + val);
+        })
+        .catch(val => {
+            console.log('Error selecting awards');
+            res.status(501).send('Error selecting awards. Val = ' + val);
+        })
 });
 
 // Testing auth middleware, remove soon

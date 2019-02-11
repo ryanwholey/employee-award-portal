@@ -3,9 +3,9 @@ const { UNAUTHORIZED } = require('http-status-codes')
 const cookieLib = require('../lib/cookies')
 const authLib = require('../lib/auth')
 
-async function verifyTokenMidleware(req, res, next) {
-    let token
 
+async function convertTokenToUser(req, res, next) {
+    let token
     // check cookie for token
     const cookieToken = cookieLib.parseRequestForCookie(req, 'eap-token')
     if (cookieToken) {
@@ -18,21 +18,49 @@ async function verifyTokenMidleware(req, res, next) {
         token = req.query.token
     }
 
-    if (!token) {
-        return res.status(UNAUTHORIZED).send()        
+    if (token) {
+        let tokenPayload
+        try {
+            tokenPayload = await authLib.verifyToken(token)
+            req.user = tokenPayload.user
+        } catch (err) {
+            // continue
+        }
     }
 
-    let tokenPayload
-    try {
-        tokenPayload = await authLib.verifyToken(token)
-    } catch (err) {
+    next()
+}
+
+async function assertLoggedIn(req, res, next) {
+    if (!req.user) {
+        return res.status(UNAUTHORIZED).send()
+    } 
+    next()
+}
+
+async function assertIsAdmin(req, res, next) {
+    if (!req.user) {
         return res.status(UNAUTHORIZED).send()
     }
+    if (!req.user.isAdmin) {
+        return res.status(UNAUTHORIZED).send()
+    }
+    next()
+}
 
-    req.user = tokenPayload.user
+async function assertIsNotAdmin(req, res, next) {
+    if (!req.user) {
+        return res.status(UNAUTHORIZED).send()
+    }
+    if (req.user.isAdmin) {
+        return res.status(UNAUTHORIZED).send()
+    }
     next()
 }
 
 module.exports = {
-    verifyTokenMidleware
+    assertLoggedIn,
+    assertIsAdmin,
+    assertIsNotAdmin,
+    convertTokenToUser,
 }

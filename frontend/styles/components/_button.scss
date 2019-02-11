@@ -1,0 +1,23 @@
+@mixin border-radius($radius) {
+  -webkit-border-radius: $radius;
+  border-radius: $radius;
+  background-clip: padding-box;  /* stops bg color from leaking outside the border: */
+}
+
+// Button
+
+.button {
+  background: white;
+  border: none;
+  //border-bottom: .3rem solid darken($color4, 10%);
+  color: black; 
+  font-weight: 500;
+  border-color: darken($color4, 10%);
+  border-style: outset;
+  margin: $s-size;
+  padding: .5rem;
+  @include border-radius(10px);
+  &:hover {
+    box-shadow: inset 0 0 0 .5px #27496d, 0 1px 1px #193047;
+  }
+}

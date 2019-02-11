@@ -20,7 +20,7 @@ router.get('/users/:id', async (req, res) => {
     try {
         const user = await userService.getUserById(req.params.id)
 
-        return res.status(OK).json(user)
+        return res.status(OK).json({ data: user })
     } catch (err) {
 
         if (err.isJoi) {

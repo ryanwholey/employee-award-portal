@@ -1,21 +1,21 @@
 const { UNAUTHORIZED } = require('http-status-codes')
 
 const {
-    verifyTokenMidleware
+    convertTokenToUser
 } = require('../../../api/middleware/auth')
 const cookies = require('../../../api/lib/cookies')
 const authLib = require('../../../api/lib/auth')
 
 
-describe('verifyTokenMidleware', () => {
+describe('convertTokenToUser', () => {
 
     let server
     let authLibSpy
     let cookiesSpy
 
     afterEach(() => {
-        authLibSpy.mockRestore && authLibSpy.mockRestore()
-        cookiesSpy.mockRestore && cookiesSpy.mockRestore()
+        authLibSpy && authLibSpy.mockRestore && authLibSpy.mockRestore()
+        cookiesSpy && cookiesSpy.mockRestore && cookiesSpy.mockRestore()
     })
 
     it('should accept cookie as valid token', async () => {
@@ -30,7 +30,7 @@ describe('verifyTokenMidleware', () => {
         const req = {}
         const next = jest.fn()
 
-        await verifyTokenMidleware(req, {}, next)
+        await convertTokenToUser(req, {}, next)
 
         expect(req.user).toEqual(user)
         expect(authLibSpy.mock.calls[0]).toEqual(['12345'])
@@ -50,7 +50,7 @@ describe('verifyTokenMidleware', () => {
 
         const next =  jest.fn()
         
-        await verifyTokenMidleware(req, {}, next)
+        await convertTokenToUser(req, {}, next)
         
         expect(req.user).toEqual(user)
         expect(authLibSpy.mock.calls[0]).toEqual(['12345'])
@@ -71,14 +71,14 @@ describe('verifyTokenMidleware', () => {
 
         const next =  jest.fn()
         
-        await verifyTokenMidleware(req, {}, next)
+        await convertTokenToUser(req, {}, next)
         
         expect(req.user).toEqual(user)
         expect(authLibSpy.mock.calls[0]).toEqual(['12345'])
         expect(next.mock.calls.length).toBe(1)
     })
 
-    it('should reject if no were passed', async () => {
+    it('should not add a user to the request if no token was passed', async () => {
         const req = {
             headers: {},
             query: {},
@@ -90,11 +90,10 @@ describe('verifyTokenMidleware', () => {
         }
 
         const next = jest.fn()
-        await verifyTokenMidleware(req, res, next)
+        await convertTokenToUser(req, res, next)
 
-        expect(res.status.mock.calls.length).toBe(1)
-        expect(res.status.mock.calls[0]).toEqual([UNAUTHORIZED])
-        expect(next.mock.calls.length).toBe(0)
+        expect(res.user).toEqual(undefined)
+        expect(next.mock.calls.length).toBe(1)
     })
 
     it('should reject if token is invalid', async () => {
@@ -115,10 +114,10 @@ describe('verifyTokenMidleware', () => {
         const req = {}
         const next = jest.fn()
 
-        await verifyTokenMidleware(req, res, next)
+        await convertTokenToUser(req, res, next)
 
         expect(authLibSpy.mock.calls.length).toBe(1)
-        expect(res.status.mock.calls[0]).toEqual([UNAUTHORIZED])
-        expect(next.mock.calls.length).toBe(0)
+        expect(req.user).toEqual(undefined)
+        expect(next.mock.calls.length).toBe(1)
     })
 })

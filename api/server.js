@@ -1,7 +1,6 @@
 const _ = require('lodash')
 const bodyParser = require('body-parser')
 const express = require('express')
-const httpProxy = require('http-proxy')
 const { OK } = require('http-status-codes')
 const morgan = require('morgan')
 const cron = require("node-cron");
@@ -12,6 +11,7 @@ const knex = require('../db/knex')
 const routes = require('./routes')
 const awards = require('../lib/awards.js');
 const dbreader = require('../lib/dbreader.js');
+const authMiddleware = require('./middleware/auth')
 
 const app = express();
 
@@ -26,23 +26,11 @@ app.use(bodyParser.urlencoded({
     extended: true
 }))
 
+app.use(authMiddleware.convertTokenToUser)
+
 if (config.NODE_ENV === 'development') {
     // disable caching in development
     app.set('etag', false)
-
-    // send non api requests to webpack-dev-server
-    const proxy = httpProxy.createProxyServer()
-
-    app.use((req, res, next) => {
-        
-        if (!req.originalUrl.startsWith('/api')) {
-            return proxy.web(req, res, { target:  config.WEBPACK_DEV_URL })
-        }
-
-        next()
-    })
-} else {
-    // route static production assets
 }
 
 app.get('/api/data', (req, res) => {
@@ -130,7 +118,8 @@ process.on('SIGINT', () => {
 })
 
 process.on('unhandledRejection', (error) => {
-    console.log('unhandledRejection', error.message)
+    console.error('unhandledRejection', error.message)
+    console.error(error.stack)
     server.kill()
 });
 

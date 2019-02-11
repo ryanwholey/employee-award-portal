@@ -1,16 +1,9 @@
 const _ = require('lodash')
+const bcrypt = require('bcrypt')
 const Joi = require('joi')
 
 const knex = require('../db/knex')
 const { NotFoundError, DuplicateEntryError } = require('./errors')
-
-// TODO use node bcrypt
-function getPasswordSaltAndHash(password) {
-    return {
-        salt: '12345',
-        passhash: password
-    }
-}
 
 const idSchema = Joi.number().label('id')
 const createUserSchema = Joi.object().keys({
@@ -41,26 +34,12 @@ function returnUserObject(attrs) {
     }
 }
 
-async function getUserById(id) {
-    await Joi.validate(id, idSchema)
+async function changePassword(userId, password) {
+    const passwordFields = await getPasswordSaltAndHash(password)
 
-    const user = await knex('users')
-    .select(
-        'id',
-        'email',
-        'first_name',
-        'last_name',
-        'is_admin',
-        'region',
-    )
-    .where({ id })
-    .first()
-
-    if (user === undefined) {
-        throw new NotFoundError()
-    }
-
-    return returnUserObject(user)
+    return knex('users')
+    .where({ id: userId })
+    .update(passwordFields)
 }
 
 async function createUser(attrs) {
@@ -68,7 +47,7 @@ async function createUser(attrs) {
 
     const userAttrs = _.pickBy({
         ..._.pick(attrs, ['email', 'first_name', 'last_name', 'region', 'is_admin']),
-        ...getPasswordSaltAndHash(attrs.password),
+        ...(await getPasswordSaltAndHash(attrs.password)),
     }, _.identity)
 
     try {
@@ -85,46 +64,71 @@ async function createUser(attrs) {
     }
 }
 
+async function getPasswordSaltAndHash(password) {
+    const salt = await bcrypt.genSalt(10)
+    const passhash = await bcrypt.hash(password, salt);
+    
+    return {
+        salt,
+        passhash,
+    }
+}
+
 async function getUserByEmail(email) {
-    return knex('users')
-    .where({ email })
-    .then((users) => {
-        const [ user ] = users
-
-        if (!user) {
-            throw new Error('No user found')
-        }
-
-        return user
-    })
-    .catch(() => {
+    let user
+    try {
+        user = await knex('users')
+        .where({ email })
+        .first()
+    } catch (err) {
         return null
-    })
+    }
+
+    if (!user) {
+        throw new NotFoundError()
+    }
+
+    return user
 }
 
 async function getUserByEmailAndPassword(email, password) {
-    // todo implement real password retrieval
-    return knex('users')
-    .where({ email })
-    .then((users) => {
-        const [ user ] = users
+    let user
 
-        if (!user) {
-            throw new Error('No user found')
-        }
-
-        return user
-    })
-    .catch(() => {
+    try {
+        user = await getUserByEmail(email)
+    } catch (err) {
         return null
-    })
+    }
+
+    if (!user) {
+        return null
+    }
+    
+    const isCorrect = await bcrypt.compare(password, user.passhash)
+
+    return isCorrect ? user : null
 }
 
-async function changePassword(userId, password) {
-    return knex('users')
-    .where({ id: userId })
-    // todo implement real password hash
-    .update({ passhash: password })
+async function getUserById(id) {
+    await Joi.validate(id, idSchema)
+
+    const user = await knex('users')
+    .select(
+        'id',
+        'email',
+        'first_name',
+        'last_name',
+        'is_admin',
+        'region',
+    )
+    .where({ id })
+    .first()
+
+    if (!user) {
+        throw new NotFoundError()
+    }
+
+    return returnUserObject(user)
 }
 
 module.exports = {

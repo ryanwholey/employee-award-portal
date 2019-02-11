@@ -31,8 +31,23 @@ router.post('/login_tokens', async (req, res) => {
         return res.status(UNAUTHORIZED).send()
     }
 
+    const {
+        id,
+        is_admin: isAdmin,
+        first_name: firstName,
+        last_name: lastName,
+    } = user
+
+    const tokenUser = {
+        id,
+        isAdmin,
+        firstName,
+        lastName,
+        email,
+    }
+
     const tokenData = {
-        user: _.pick(user, ['id', 'is_admin', 'first_name', 'last_name', 'email'])
+        user: tokenUser
     }
 
     const token = await authLib.createToken(tokenData)

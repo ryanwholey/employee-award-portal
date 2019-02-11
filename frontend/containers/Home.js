@@ -25,7 +25,7 @@ export default class Home extends React.Component {
     }
 
     componentDidMount() {
-        fetchGet('/api/data')
+        fetchGet('/api/system/data')
         .then((res) => {
             this.setState({
                 data: res.data
@@ -105,7 +105,7 @@ export default class Home extends React.Component {
     _getSecretData = (e) => {
         e.preventDefault()
 
-        fetchGet('/api/secret')
+        fetchGet('/api/system/secret')
         .then((secretData) => {
             this.setState({ secretData })
         })
@@ -114,10 +114,6 @@ export default class Home extends React.Component {
                 secretData: 'NOPE'
             })
         })
-    }
-
-    _handleLogout = () => {
-        this.cookies.remove('eap-token', { path: '/' })
     }
 
     render() {
@@ -152,7 +148,6 @@ export default class Home extends React.Component {
                     <button onClick={ this._handleSubmit } type="submit">Submit </button>
                 </form>
                 <button onClick={ this._getSecretData }>Get Secret Data</button>
-                <button onClick={ this._handleLogout }>logout</button>
                 <div>{ JSON.stringify(secretData) }</div>
             </div>
         )

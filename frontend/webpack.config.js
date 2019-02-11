@@ -19,8 +19,9 @@ module.exports = {
     devtool: NODE_ENV === 'production' ? 'source-map' : 'cheap-module-eval-source-map',
     entry: path.resolve(__dirname, './index'),
     output: {
-        path: path.resolve(__dirname, './build'),
-        filename: 'bundle.js'
+        path: path.resolve(__dirname, './static'),
+        filename: 'bundle.js',
+        publicPath: '/static'
     },
     module: {
         rules: [
@@ -42,6 +43,9 @@ module.exports = {
     }, 
     devServer: {
         port: 8080,
+        historyApiFallback: {
+            index: '/static/index.html'
+        }
     },
     plugins: getPlugins(NODE_ENV)
 }

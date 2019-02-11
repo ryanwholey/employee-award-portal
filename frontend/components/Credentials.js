@@ -6,39 +6,33 @@ export default class Credentials extends React.Component {
     super(props);
 
     this.state = {
-      name: undefined,
-      password: undefined
+      email: '',
+      password: ''
     }
 
-    this.handleInputChange = this.handleInputChange.bind(this);
+    this.baseState = this.state;
+    this.updateState = this.updateState.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  handleInputChange(e) {
-    const target = e.target;
-    const name = target.name; 
-
-    this.setState({
-      [name]: value, 
-    });
   }
 
   handleSubmit(e) {
     e.preventDefault();
+    console.log(`User entered the following - Email: ${this.state.email}  Pass: ${this.state.password}`);
+    this.setState(this.baseState);
   }
+
+  updateState(e) {
+    this.setState({ [e.target.name]: e.target.value });
+  };
 
   render() {
     
     return (
       <div>
         <form onSubmit={this.handleSubmit}>
-          <input type='text' name='Email' placeholder='Email' />
-          <input type='password' name='Password' placeholder='Password' />
-          <button 
-            onClick={this.handleInputChange}
-          >
-            Login
-          </button>
+          <input type='text' name='email' placeholder='Email' value={this.state.email} onChange={this.updateState} />
+          <input type='password' name='password' placeholder='Password' value={this.state.password} onChange={this.updateState} />
+          <button className='button'>Login</button>
         </form>
       </div>
     );

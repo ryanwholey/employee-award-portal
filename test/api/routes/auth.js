@@ -5,6 +5,7 @@ const resetPasswordService = require('../../../services/resetPassword')
 const userService = require('../../../services/users')
 const { initServer } = require('../../../api/server')
 const { getMockUser } = require('../../mocks')
+const { createUser } = require('../../testUtils/entityFactory')
 
 
 describe('POST /api/login_tokens', () => {
@@ -39,11 +40,26 @@ describe('POST /api/login_tokens', () => {
         })
     })
 
-    it('should respond with UNAUTHORIZED login fails', () => {
+    it('should respond with UNAUTHORIZED if no user is found', () => {
         return request(server)
         .post('/api/login_tokens')
         .send({ 
-            email: 'connor@email.com',
+            email: 'nouser@noemail.com',
+            password: 'fakepw',
+        })
+        .set('Accept', 'application/json')
+        .expect((response) => {
+            expect(response.statusCode).toEqual(UNAUTHORIZED)
+        })
+    })
+
+    it('should respond with UNAUTHORIZED login fails', async () => {
+        const user = await createUser()
+
+        return request(server)
+        .post('/api/login_tokens')
+        .send({ 
+            email: user.email,
             password: 'pw123',
         })
         .set('Accept', 'application/json')

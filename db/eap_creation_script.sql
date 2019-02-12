@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `eap`.`users` (
   `last_name` VARCHAR(32) NOT NULL,
   `salt` VARCHAR(64) NOT NULL,
   `passhash` CHAR(64) NOT NULL,
-  `is_admin` BINARY NULL DEFAULT 0,
+  `is_admin` BOOLEAN NULL DEFAULT 0,
   `region` INT NULL,
   `ctime` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `mtime` DATETIME NULL,

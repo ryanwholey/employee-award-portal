@@ -17,7 +17,9 @@ const app = express();
 
 cron.schedule("* * * * *", function() {
     console.log('I did a thing at ' + moment(Date.now()).format('hh:mm:ss'));
-    dbreader.selectAwards();
+
+    dbreader.selectAwards()
+    .catch(console.error)
 });
 
 app.use(morgan(config.LOGGER_SETTINGS))

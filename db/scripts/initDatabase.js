@@ -2,11 +2,6 @@ require('dotenv').config()
 const fs = require('fs')
 const path = require('path')
 
-if (process.env.NODE_ENV === 'production') {
-    console.log('This script should not be run in production at the moment')
-    process.exit(1)
-}
-
 const { connection } = require('../../knexfile')[process.env.NODE_ENV || 'development']
 const config = {
     client: 'mysql',

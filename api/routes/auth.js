@@ -114,7 +114,7 @@ router.post('/reset_password', async (req, res) => {
 
     await resetPasswordService.deleteFlowToken(flowToken)
 
-    res.status(OK).send()
+    res.status(OK).json({})
 })
 
 module.exports = router

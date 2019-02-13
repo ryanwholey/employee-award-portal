@@ -65,9 +65,9 @@ export default class PasswordReset extends React.Component {
 
     }
 
-    _setStateOnChange = (key) => (e) => {
+    _setStateOnChange = (e) => {
         this.setState({
-            [key]: e.target.value
+            [e.target.name]: e.target.value
         })
     }
 
@@ -83,8 +83,6 @@ export default class PasswordReset extends React.Component {
     }
 
     render() {
-        console.log(this._hasErrorsForId('password'))
-
         const {
             password,
             confirmPassword,
@@ -99,10 +97,11 @@ export default class PasswordReset extends React.Component {
                     <input 
                         style={this._hasErrorsForId('password') ? { border: '1px solid red'} : {}}
                         id="password" 
+                        name="password"
                         type="text" 
                         autoComplete="off"
                         value={ password } 
-                        onChange={ this._setStateOnChange('password') } 
+                        onChange={ this._setStateOnChange }
                     />
                 </div>
                 <div>
@@ -110,10 +109,11 @@ export default class PasswordReset extends React.Component {
                     <input 
                         style={this._hasErrorsForId('confirmPassword') ? { border: '1px solid red'} : {}}
                         id="confirmPassword" 
+                        name="confirmPassword"
                         type="text" 
                         autoComplete="off"
                         value={ confirmPassword } 
-                        onChange={ this._setStateOnChange('confirmPassword') }
+                        onChange={ this._setStateOnChange }
                     />
                 </div>
                 <button type="submit" onClick={ this._handleSumbmit }>Reset Password</button>

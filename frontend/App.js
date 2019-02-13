@@ -5,6 +5,8 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom'
 import Home from './containers/Home'
 import AdminHome from './containers/AdminHome'
 import PasswordReset from './containers/PasswordReset'
+import Login from './components/Login'
+import CreateAward from './components/CreateAward'
 
 import './app.css'
 
@@ -25,7 +27,8 @@ export default class App extends React.Component {
                     <Switch>
                         <Route path="/admin" render={() => <AdminHome /> } />
                         <Route path="/reset_password" render={() => <PasswordReset /> } />
-                        <Route render={() => <Home passedProp="Pased prop" />} />
+                        <Route path="/login" render={() => <Login />} />
+                        <Route render={() => <CreateAward />} />
                     </Switch>
                 </React.Fragment>
             </BrowserRouter>

@@ -79,10 +79,11 @@ app.get('/api/awards/', (req, res) => {
 });
 
 // Testing auth middleware, remove soon
-const authMiddleware = require('./middleware/auth').verifyTokenMidleware
-app.get('/api/secret', authMiddleware, (req, res) => {
+// TODO resolve conflict between the line below and earlier declaration
+//const authMiddleware = require('./middleware/auth').verifyTokenMidleware
+/*app.get('/api/secret', authMiddleware, (req, res) => {
     res.status(200).json({ data: 'this is secret!', ...req.user })
-})
+})*/
 
 app.use(routes)
 

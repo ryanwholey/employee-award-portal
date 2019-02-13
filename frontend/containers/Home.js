@@ -96,6 +96,7 @@ export default class Home extends React.Component {
         fetchPost('/api/login_tokens', { email, password })
         .then((res) => {
             this.cookies.set('eap-token', res.token, { path: '/' })
+            window.location = '/'
         })
         .catch((e) => {
             console.error(e.message)

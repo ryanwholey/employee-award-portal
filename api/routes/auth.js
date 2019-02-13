@@ -89,6 +89,7 @@ router.post('/reset_password', async (req, res) => {
     try {
         await Joi.validate(req.body, forgotEmailSchema)
     } catch (err) {
+        console.log(err)
         return res.status(BAD_REQUEST).send(err.message)
     }
 
@@ -99,22 +100,25 @@ router.post('/reset_password', async (req, res) => {
     } = req.body
 
     try {
+        console.log(flowToken, userId)
         if (!await resetPasswordService.isFlowTokenValid(flowToken, userId)) {
             throw new Error('Could not verify flow token')
         }
     } catch (err) {
+        console.log(err)
         return res.status(UNAUTHORIZED).send()
     }
 
     try {
         await userService.changePassword(userId, password)
     } catch (err) {
+        console.log(err)
         return res.status(BAD_REQUEST).send()
     }
 
     await resetPasswordService.deleteFlowToken(flowToken)
 
-    res.status(OK).send()
+    res.status(OK).json({})
 })
 
 module.exports = router

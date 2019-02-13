@@ -76,7 +76,7 @@ router.post('/forgot_password', async (req, res) => {
         console.error(`/api/forgetPassword: No user found - ${email}`)
     }
 
-    res.status(OK).send()
+    res.status(OK).json({})
 })
 
 router.post('/reset_password', async (req, res) => {

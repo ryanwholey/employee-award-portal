@@ -17,7 +17,9 @@ const app = express();
 
 cron.schedule("* * * * *", function() {
     console.log('I did a thing at ' + moment(Date.now()).format('hh:mm:ss'));
-    dbreader.selectAwards();
+
+    dbreader.selectAwards()
+    .catch(console.error)
 });
 
 app.use(morgan(config.LOGGER_SETTINGS))
@@ -32,14 +34,6 @@ if (config.NODE_ENV === 'development') {
     // disable caching in development
     app.set('etag', false)
 }
-
-app.get('/api/data', (req, res) => {
-    setTimeout(() => {
-        return res
-        .status(OK)
-        .json({ data: [ 'foo', 'bar', 'baz' ] })
-    }, 1000)
-})
 
 /* json in the client request body should include:
     - "type": the award type

@@ -66,7 +66,6 @@ export default class PasswordReset extends React.Component {
     }
 
     _setStateOnChange = (key) => (e) => {
-        console.log(this.state)
         this.setState({
             [key]: e.target.value
         })

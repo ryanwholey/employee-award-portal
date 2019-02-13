@@ -42,7 +42,6 @@ export default class Credentials extends React.Component {
   };
 
   render() {
-    
     return (
       <div>
         <form onSubmit={this.handleSubmit}>

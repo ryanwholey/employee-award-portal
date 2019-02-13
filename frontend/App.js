@@ -10,7 +10,7 @@ import CreateAward from './components/CreateAward'
 
 import './app.css'
 
-export default class App extends React.Component {
+class LoggedInHeader extends React.Component{
 
     cookies = new Cookies()
 
@@ -21,14 +21,33 @@ export default class App extends React.Component {
 
     render() {
         return (
+            <React.Fragment>
+                <button onClick={ this._handleLogout }>logout</button>
+                { this.props.children }
+            </React.Fragment>
+
+        )
+    }
+}
+
+export default class App extends React.Component {
+    render() {
+        return (
             <BrowserRouter>
                 <React.Fragment>
-                    <button onClick={ this._handleLogout }>logout</button>
                     <Switch>
-                        <Route path="/admin" render={() => <AdminHome /> } />
                         <Route path="/reset_password" render={() => <PasswordReset /> } />
                         <Route path="/login" render={() => <Login />} />
-                        <Route render={() => <CreateAward />} />
+                        <Route path="/admin" render={() => (
+                            <LoggedInHeader>
+                                <AdminHome />
+                            </LoggedInHeader>
+                        )} />
+                        <Route render={() => (
+                            <LoggedInHeader>
+                                <CreateAward />
+                            </LoggedInHeader>
+                        )} />
                     </Switch>
                 </React.Fragment>
             </BrowserRouter>

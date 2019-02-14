@@ -1,16 +1,17 @@
 import Cookies from 'universal-cookie'
 import React from 'react'
-import { BrowserRouter, Route, Switch } from 'react-router-dom'
+import { BrowserRouter, Route, Switch, withRouter } from 'react-router-dom'
 
 import Home from './containers/Home'
 import ForgotPassword from './containers/ForgotPassword'
 import AdminHome from './containers/AdminHome'
 import PasswordReset from './containers/PasswordReset'
 import Login from './components/Login'
+import Signup from './components/Signup'
 import CreateAward from './components/CreateAward'
-import { withRouter } from 'react-router-dom'
 
 import './app.css'
+import './styles/styles.scss'
 
 class LoggedInHeader extends React.Component{
 
@@ -37,6 +38,7 @@ const AppRoutes = (props) => (
         <Switch>
             <Route path="/reset_password" render={() => <PasswordReset {...props} /> } />
             <Route path="/login" render={() => <Login {...props} />} />
+            <Route path="/signup" render={() => <Signup {...props} />} />
             <Route path="/forgot_password" render={() => <ForgotPassword {...props} />} />
             <Route path="/admin" render={() => (
                 <LoggedInHeader>

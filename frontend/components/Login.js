@@ -2,12 +2,15 @@ import React from 'react';
 import Header from './Header';
 import Credentials from './Credentials';
 
-import { Redirect } from 'react-router-dom'
 
 export default class Login extends React.Component {
 
-  _handleOnClick = () => {
+  _handleForgotPasswordClick = () => {
     this.props.history.push('/forgot_password')
+  }
+
+  _handleSignupClick = () => {
+    this.props.history.push('/signup')
   }
 
   render() {
@@ -21,7 +24,8 @@ export default class Login extends React.Component {
           title={title}
         />
         <Credentials />
-        <button onClick={this._handleOnClick }>Forgot Password</button>
+        <button onClick={this._handleSignupClick }>New User</button>
+        <button onClick={this._handleForgotPasswordClick }>Forgot Password</button>
       </div>
     );
   }

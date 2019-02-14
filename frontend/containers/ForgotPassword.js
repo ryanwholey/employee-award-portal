@@ -32,12 +32,13 @@ export default class ForgotPassword extends React.Component {
                 <input 
                     id="email"
                     autoComplete="off"
+                    placeholder="Email"
                     name="email"
                     type="input"
                     value={ email }
                     onChange={ this._handleOnChange }
                 />
-                <button type="submit" onClick={ this._handleSubmit }>Send Email</button>
+                <button className="button" type="submit" onClick={ this._handleSubmit }>Send Email</button>
             </React.Fragment>
         )
     }

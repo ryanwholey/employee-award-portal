@@ -1,6 +1,7 @@
 import React from 'react';
 import Header from './Header';
 import Credentials from './Credentials';
+import { Link } from 'react-router-dom'
 
 
 export default class Login extends React.Component {
@@ -18,14 +19,14 @@ export default class Login extends React.Component {
     const subtitle = 'Employee Awards Portal';
     
     return (
-      <div className='container'>
+      <div className='__login-container'>
         <Header 
           subtitle={subtitle}
           title={title}
         />
         <Credentials />
-        <button onClick={this._handleSignupClick }>New User</button>
-        <button onClick={this._handleForgotPasswordClick }>Forgot Password</button>
+        <Link to="/signup">New User</Link>
+        <Link to="/forgot_password">Forgot Password</Link>
       </div>
     );
   }

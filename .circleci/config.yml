@@ -49,7 +49,7 @@ jobs:
       - image: circleci/node:10.15.0
     steps:
       - checkout
-      - run: ssh -oStrictHostKeyChecking=no -v circleci@$EAP_STAGING_HOST "/employee-award-portal/.circleci/deploy.sh"
+      - run: ssh -oStrictHostKeyChecking=no -v circleci@$EAP_STAGING_HOST "./employee-award-portal/.circleci/deploy.sh"
       
 workflows:
   version: 2

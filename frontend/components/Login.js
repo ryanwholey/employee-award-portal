@@ -20,7 +20,6 @@ export default class Login extends React.Component {
     
     return (
       <div className='__login-container'>
-        <h1>Test</h1>
         <Header 
           subtitle={subtitle}
           title={title}

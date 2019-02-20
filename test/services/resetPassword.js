@@ -67,8 +67,8 @@ describe('resetPassword', () => {
 
             const [ emailerArgs ] = emailerSendSpy.mock.calls
             const [ sendOptions ] = emailerArgs
-
-            expect(sendOptions.email).toEqual(user.email)
+            
+            expect(sendOptions.to).toEqual(user.email)
         })
     })
 

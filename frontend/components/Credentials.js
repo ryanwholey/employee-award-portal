@@ -44,7 +44,7 @@ export default class Credentials extends React.Component {
   render() {
     return (
       <div>
-        <form onSubmit={this.handleSubmit}>
+        <form className="container-center" onSubmit={this.handleSubmit}>
           <input type='text' name='email' placeholder='Email' value={this.state.email} onChange={this.updateState} autoComplete="off" />
           <input type='password' name='password' placeholder='Password' value={this.state.password} onChange={this.updateState} autoComplete="off" />
           <button className='button'>Login</button>

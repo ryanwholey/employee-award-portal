@@ -3,3 +3,9 @@
   margin: 0 auto;
   padding: $m-size;
 }
+
+.container-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

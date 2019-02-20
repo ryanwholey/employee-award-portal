@@ -19,7 +19,7 @@ export default class Login extends React.Component {
     const subtitle = 'Employee Awards Portal';
     
     return (
-      <div className='__login-container'>
+      <div className='container-center'>
         <Header 
           subtitle={subtitle}
           title={title}

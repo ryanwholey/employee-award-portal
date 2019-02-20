@@ -41,9 +41,9 @@ async function sendResetPasswordEmail(email, userId) {
     const flowToken = await createFlowToken(userId)
 
     return emailer.send({ 
-        email,
+        to: email,
         subject: 'Reset Password',
-        message: `http://${process.env.API_HOST}:${process.env.API_PORT}/reset_password?flow_token=${flowToken}&user_id=${userId}`,
+        text: `http://${process.env.API_HOST}:${process.env.API_PORT}/reset_password?flow_token=${flowToken}&user_id=${userId}`,
     })
 }
 

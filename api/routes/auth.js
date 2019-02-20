@@ -67,13 +67,19 @@ router.post('/forgot_password', async (req, res) => {
     }
 
     const { email } = req.body
-
+    let user
     try {
-        const user = await userService.getUserByEmail(email)
-        await resetPasswordService.sendResetPasswordEmail(email, user.id)
+        user = await userService.getUserByEmail(email)
     } catch (err) {
         console.error(err)
         console.error(`/api/forgetPassword: No user found - ${email}`)
+        return res.status(OK).json({})
+    }
+    try {
+        await resetPasswordService.sendResetPasswordEmail(email, user.id)
+    } catch (err) {
+        console.error(err)
+        console.error(`Failed to send password reset email - ${email}`)
     }
 
     res.status(OK).json({})

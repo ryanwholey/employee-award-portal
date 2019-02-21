@@ -2,7 +2,6 @@ import Cookies from 'universal-cookie'
 import React from 'react'
 import { BrowserRouter, Route, Switch, withRouter } from 'react-router-dom'
 
-import Home from './containers/Home'
 import ForgotPassword from './containers/ForgotPassword'
 import AdminHome from './containers/AdminHome'
 import PasswordReset from './containers/PasswordReset'
@@ -25,7 +24,7 @@ class LoggedInHeader extends React.Component{
     render() {
         return (
             <React.Fragment>
-                <button onClick={ this._handleLogout }>logout</button>
+                <button className="button" onClick={ this._handleLogout }>logout</button>
                 { this.props.children }
             </React.Fragment>
 

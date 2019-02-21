@@ -3,7 +3,6 @@ import Cookies from 'universal-cookie'
 import Header from './Header';
 import { fetchPost } from '../utils/http'
 import { Link } from 'react-router-dom'
-import '../styles/components/_signup.scss'
 
 export default class Signup extends React.Component {
 
@@ -73,12 +72,12 @@ export default class Signup extends React.Component {
     } = this.state
 
     return (
-      <div className='__signin-container'>
+      <div className="container-center">
         <Header 
           subtitle={subtitle}
           title={title}
         />
-        <form>
+        <form className="container-center">
           <input 
             type='text'
             name='email'

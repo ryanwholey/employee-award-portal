@@ -1,6 +1,7 @@
 import React from 'react'
-import { fetchPost } from '../utils/http'
+import { Link } from 'react-router-dom'
 
+import { fetchPost } from '../utils/http'
 
 export default class ForgotPassword extends React.Component {
     state = {
@@ -27,8 +28,10 @@ export default class ForgotPassword extends React.Component {
         const { email } = this.state
 
         return (
-            <React.Fragment>
+            <div className="container-center">
+                <h1>Forget your password?</h1>
                 <div>Enter your email and we will send you a link to reset your password</div>
+                <span style={{color: 'red'}}>Note: This email will likely route to your spam folder!</span>
                 <input 
                     id="email"
                     autoComplete="off"
@@ -39,7 +42,9 @@ export default class ForgotPassword extends React.Component {
                     onChange={ this._handleOnChange }
                 />
                 <button className="button" type="submit" onClick={ this._handleSubmit }>Send Email</button>
-            </React.Fragment>
+                <Link to="/login">Login</Link>
+                <Link to="/signup">New User</Link>
+            </div>
         )
     }
 }

@@ -89,36 +89,36 @@ export default class PasswordReset extends React.Component {
         } = this.state
 
         return (
-            <React.Fragment>
-            <h1>Reset Password</h1>
-            <form>
-                <div>
-                    <label htmlFor="password">Password</label>
-                    <input 
-                        style={this._hasErrorsForId('password') ? { border: '1px solid red'} : {}}
-                        id="password" 
-                        name="password"
-                        type="text" 
-                        autoComplete="off"
-                        value={ password } 
-                        onChange={ this._setStateOnChange }
-                    />
-                </div>
-                <div>
-                    <label htmlFor="confirmPassword">Confirm Password</label>
-                    <input 
-                        style={this._hasErrorsForId('confirmPassword') ? { border: '1px solid red'} : {}}
-                        id="confirmPassword" 
-                        name="confirmPassword"
-                        type="text" 
-                        autoComplete="off"
-                        value={ confirmPassword } 
-                        onChange={ this._setStateOnChange }
-                    />
-                </div>
-                <button type="submit" onClick={ this._handleSumbmit }>Reset Password</button>
-            </form> 
-            </React.Fragment>
+            <div className="container-center">
+                <h1>Reset Password</h1>
+                <form className="container-center">
+                    <div>
+                        <input 
+                            style={this._hasErrorsForId('password') ? { border: '1px solid red'} : {}}
+                            id="password" 
+                            name="password"
+                            type="password" 
+                            placeholder="password"
+                            autoComplete="off"
+                            value={ password } 
+                            onChange={ this._setStateOnChange }
+                        />
+                    </div>
+                    <div>
+                        <input 
+                            style={this._hasErrorsForId('confirmPassword') ? { border: '1px solid red'} : {}}
+                            id="confirmPassword" 
+                            name="confirmPassword"
+                            type="password"
+                            placeholder="confirm password"
+                            autoComplete="off"
+                            value={ confirmPassword } 
+                            onChange={ this._setStateOnChange }
+                        />
+                    </div>
+                    <button className="button" type="submit" onClick={ this._handleSumbmit }>Reset Password</button>
+                </form> 
+            </div>
         )
     }
 }

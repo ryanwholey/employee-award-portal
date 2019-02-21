@@ -49,7 +49,7 @@ export default class NewAward extends React.Component {
           <h2 className='new-award__subtitle'>Create New Award</h2>
           {this.state.error && <p>{this.state.error}</p>}
           <form onSubmit={this.handleSubmit}>
-            <select name='awardType' onChange={this.updateState} > 
+            <select name='awardType' value={this.state.awardType} onChange={this.updateState} > 
               <option value={this.props.awardOptions[0]}>Employee of the Month</option>
               <option value={this.props.awardOptions[1]}>Monthly Sales Winner</option>
             </select>       

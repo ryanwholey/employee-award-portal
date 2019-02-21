@@ -13,12 +13,9 @@ const AwardList = (props) => {
           props.awards.map((award) => (
             <Award
               key={award.id}
-              id={award.id}
-              awardType={award.awardType}
-              name={award.name}
-              email={award.email}
-              createdAt={award.createdAt}
+              award={award}
               handleDeleteAward={props.handleDeleteAward}
+              handleAwardToEdit={props.handleAwardToEdit}
             />
           ))
         }

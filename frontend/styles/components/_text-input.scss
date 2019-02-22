@@ -1,9 +1,17 @@
 input {
-    &[type="text"], &[type="password"], &[type="input"] {
+    &[type="text"], &[type="password"], &[type="input"], &[type="email"] {
         width: 400px;
         height: 40px;
         font-size: 16px;
         margin: 10px 0;
         padding-left: 10px;
     }
+}
+
+select {
+    width: 400px;
+    height: 40px;
+    font-size: 16px;
+    margin: 10px 0;
+    padding-left: 10px;
 }

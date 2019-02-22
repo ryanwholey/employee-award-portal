@@ -1,19 +1,19 @@
-const moment = require('moment');
-require('dotenv').config();
+const knex = require('../db/knex')
 
-const { connection } = require('../knexfile')[process.env.NODE_ENV || 'development']
-const config = {
-    client: 'mysql',
-    connection: {
-        host: connection.host,
-        port: connection.port,
-        user: connection.user,
-        database: 'eap',
-        multipleStatements: true
-    }
+function selectAwards() {
+    console.log('I\'ll try selecting awards');
+    //const thisTime = moment(Date.now());
+    return knex.from('awards')
+        .select("id", "type", "creator", "recipient", "granted")
+        /*.where(knex.raw('?? < ?', ['granted', thisTime]))*/
+        .then((rows) => {
+            for (row of rows) {
+                console.log(`${row['id']} ${row['type']} ${row['creator']} ${row['recipient']} ${row['granted']}`);
+            }
+        })
+        .catch((err) => { console.log( err); throw err })
 };
 
-const knex = require('knex')(config);
 
 /**
  * @param {string} params.type      - type of award
@@ -22,16 +22,13 @@ const knex = require('knex')(config);
  * @param {string} params.granted   - date award is to be granted
  * @returns {Promise} Promise object
  */
-module.exports.createAward = (params) => {
+function createAward(params) {
     console.log("I\'ll try adding an award...");
     //const mysqlTimestamp = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss');
     //params['ctime'] = mysqlTimestamp;
     const data = [params];
     knex('awards').insert(data).then(() => console.log("data inserted"))
         .catch((err) => { console.log(err); throw err })
-        .finally(() => {
-            knex.destroy();
-        });
     console.log('Past the INSERT statement');
     return new Promise((resolve, reject) => {
         val=1;
@@ -44,3 +41,8 @@ module.exports.createAward = (params) => {
         }
     })
 };
+
+module.exports = {
+    createAward,
+    selectAwards,
+}

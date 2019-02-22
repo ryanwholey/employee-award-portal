@@ -15,6 +15,7 @@ module.exports = {
             host: process.env.DB_HOST,
             user: process.env.DB_USER,
             port: process.env.DB_PORT,
+            password: process.env.DB_PASS,
             database: 'eap',
         }
     },
@@ -24,6 +25,7 @@ module.exports = {
             host: '127.0.0.1',
             user: 'root',
             port: process.env.IS_CI ?  process.env.DB_PORT : '3346',
+            password: process.env.DB_PASS,
             database: 'eap',
         }
     },
@@ -33,6 +35,7 @@ module.exports = {
             host: process.env.DB_HOST,
             user: process.env.DB_USER,
             port: process.env.DB_PORT,
+            password: process.env.DB_PASS,
             database: 'eap',
         }
     },

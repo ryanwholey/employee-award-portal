@@ -6,7 +6,7 @@
 
 1. [docker](https://docs.docker.com/): [mac](https://download.docker.com/mac/stable/Docker.dmg) | [windows](https://download.docker.com/win/stable/Docker%20for%20Windows%20Installer.exe)
 
-# Quickstart
+# Quickstart - Local Setup for Dev
 
 1. `cd` to the project root
 1. `nvm use` - Use specific node version in `.nvmrc`
@@ -18,9 +18,9 @@
 1. `npm run frontend:dev` - In a separate terminal, start webpack frontend
 1. Head to `http://localhost:4000` to ensure you can see the homepage
 
-# Database
+# Database (for local dev environment)
 
-We use a MySQl database to store our data.
+We use a MySQL database to store our data.
 
 To initialize the database, run `npm init:db`. This will create the base schema. Next run all migrations to move the data models to their latest state `npx knex migrate:latest`.
 

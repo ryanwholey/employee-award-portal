@@ -1,20 +1,5 @@
 const moment = require('moment');
-require('dotenv').config();
-
-const { connection } = require('../knexfile')[process.env.NODE_ENV || 'development']
-const config = {
-    client: 'mysql',
-    connection: {
-        host: connection.host,
-        port: connection.port,
-        user: connection.user,
-        password: connection.password,
-        database: 'eap',
-        multipleStatements: true
-    }
-};
-
-const knex = require('knex')(config);
+const knex = require('../db/knex')
 
 module.exports.selectAwards = () => {
     console.log('I\'ll try selecting awards');

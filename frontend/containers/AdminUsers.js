@@ -12,6 +12,22 @@ const defaultPageOptions = {
     pageSize: 10,
 }
 
+/**
+ * Downloads a text blob using browser
+ * Borrowed from https://stackoverflow.com/questions/27073661/add-and-remove-div-from-body-in-javascript
+ */
+function downloadFile(filename, contents) {
+    const data = new Blob([contents], {type: 'text/csv'})
+    const csvURL = window.URL.createObjectURL(data)
+    const tempLink = document.createElement('a')
+
+    tempLink.href = csvURL
+    tempLink.setAttribute('download', filename)
+    document.body.appendChild(tempLink)
+    tempLink.click()
+    document.body.removeChild(tempLink)
+}
+
 class EditUserForm  extends React.Component {
 
     constructor(props) {
@@ -41,7 +57,6 @@ class EditUserForm  extends React.Component {
             email,
             isAdmin,
         } = this.state
-
 
         return (
             <form className="container container-center">
@@ -201,6 +216,36 @@ export default class AdminHome extends React.Component {
         .catch(console.error)
     }
 
+    handleExportToCsv = () => {
+        const { users } = this.state
+        const columns = [
+            {
+                display: 'First Name',
+                key: 'firstName',
+            },
+            {
+                display: 'Last Name',
+                key: 'lastName',
+            },
+            {
+                display: 'Email',
+                key: 'email',
+            },
+            {
+                display: 'Admin',
+                key: 'isAdmin',
+            },
+        ]
+        const csv = [
+            columns.map(({display}) => display).join(','),
+            ...users.map((user) => {
+                return columns.map(({key}) => user[key]).join(',')
+            })
+        ].join('\n')
+
+        downloadFile('users.csv', csv)
+    }
+
     handleFormFieldChange = (e) => {
         const name = e.target.name
         let value = e.target.value
@@ -288,6 +333,7 @@ export default class AdminHome extends React.Component {
         return (
             <React.Fragment>
                 <button className="button" onClick={ this.handleCreateUserClick }>Create User</button>
+                <button className="button" onClick={ this.handleExportToCsv }>Export to CSV</button>
                 <ReactTable
                     data={ users }
                     pages={ totalPages }
@@ -350,7 +396,7 @@ export default class AdminHome extends React.Component {
     render() {
         return (
             <div>
-                <h1>Users Console</h1>
+                <h1 className="header">Users Console</h1>
                 {this.renderUsers()}
             </div>
         )

@@ -1,0 +1,28 @@
+
+$nav-color: $color4;
+
+nav {
+    display: flex;
+    flex-direction: row;
+    background: $nav-color;
+    height: 50px;
+    align-items: center; 
+}
+
+.nav-container {
+    display: flex;
+    background: $nav-color;
+}
+
+.nav-link {
+    padding: 0 10px 0 10px;
+    text-decoration: none;
+
+    &:hover {
+        box-shadow: 0 2px 0 black;
+    }
+}
+
+.nav-link.active {
+    box-shadow: 0 2px 0 black;
+}

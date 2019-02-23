@@ -34,6 +34,25 @@ router.get('/users/:id', async (req, res) => {
     }
 })
 
+router.get('/users', async (req, res) => {
+    const pageSize = req.query.page_size
+    const page = req.query.page
+    const paginationOptions = _.pickBy({ pageSize, page }, _.identity)
+    
+    try {
+        const users = await userService.getUsers(paginationOptions)
+
+        res.status(OK).json(users)
+    } catch (err) {
+        if (err instanceof NotFoundError) {
+            return res.status(BAD_REQUEST).json({ error: err.message })
+        }
+
+        console.error(err)
+        res.status(INTERNAL_SERVER_ERROR).send()
+    }
+})
+
 router.post('/users', async (req, res) => {
     try {
         const user = await userService.createUser(req.body)

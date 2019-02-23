@@ -131,6 +131,45 @@ async function getUserById(id) {
     return returnUserObject(user)
 }
 
+async function getUsers(pageOptions = {}) {
+    const defaultPageOptions = {
+        pageSize: 10,
+        page: 1,
+    }
+    const options = {
+        ...defaultPageOptions,
+        ...pageOptions,
+    }
+
+    const pageSize = options.pageSize
+    const page = options.page < 1 ? 1 : options.page
+    const [ res ] = await knex('users')
+    .count('*')
+    .whereNull('dtime')
+
+    const count = res['count(*)']
+    const totalPages = Math.ceil(count / pageSize) || 1
+
+    if (page > totalPages) {
+        throw new NotFoundError(`Page ${page} requested, total pages ${totalPages}`)
+    }
+    const offset = (pageSize * page) - pageSize
+    const users = await knex('users')
+    .select(['ctime', 'first_name', 'last_name', 'is_admin', 'id', 'region', 'mtime', 'email'])
+    .offset(offset)
+    .limit(pageSize)
+    .whereNull('dtime')
+
+    return {
+        pagination: {
+            page,
+            page_size: pageSize,
+            total_pages: totalPages,
+        },
+        data: users,
+    }
+}
+
 module.exports = {
     changePassword,
     createUser,
@@ -139,4 +178,5 @@ module.exports = {
     getUserByEmail,
     getUserByEmailAndPassword,
     getUserById,
+    getUsers,
 }

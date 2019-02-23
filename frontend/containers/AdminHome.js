@@ -8,7 +8,6 @@ export default class AdminHome extends React.Component {
             <React.Fragment>
                 <Link to="/admin">Users</Link>
                 <Link to="/admin/awards">Awards</Link>
-                <h1>hello admin</h1>
                 <Switch>
                 <Redirect exact from="/admin" to="/admin/users" />
                 <Route path="/admin/users" render={() => <AdminUsers /> } />

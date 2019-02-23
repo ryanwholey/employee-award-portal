@@ -1,8 +1,10 @@
 const _ = require('lodash')
 const bcrypt = require('bcrypt')
 const Joi = require('joi')
+const moment = require('moment')
 
 const knex = require('../db/knex')
+const dateUtil = require('../utils/date')
 const { NotFoundError, DuplicateEntryError } = require('./errors')
 
 const idSchema = Joi.number().label('id')
@@ -170,13 +172,54 @@ async function getUsers(pageOptions = {}) {
     }
 }
 
+async function patchUserById(userId, userAttrs) {
+    const now = moment(new Date())
+
+    const {
+        firstName: first_name,
+        lastName: last_name,
+        email,
+        isAdmin, is_admin,
+    } = userAttrs
+
+    try {
+        return await knex('users')
+        .where({ id: userId })
+        .whereNull('dtime')
+        .update({
+            ..._.pickBy({first_name, last_name, email, is_admin}, _.identity),
+            mtime: dateUtil.formatMySQLDatetime(now),
+        })
+    } catch (err) {
+        if (err.code === 'ER_DUP_ENTRY') {
+            throw new DuplicateEntryError(err.message)
+        }
+
+        throw err
+    }
+}
+
+async function deleteUserById(userId) {
+    const now = moment(new Date())
+
+    return await knex('users')
+    .where({ id: userId })
+    .whereNull('dtime')
+    .update({
+        dtime: dateUtil.formatMySQLDatetime(now)
+    })
+}
+
+
 module.exports = {
     changePassword,
     createUser,
     createUserSchema,
+    deleteUserById,
     getPasswordSaltAndHash,
     getUserByEmail,
     getUserByEmailAndPassword,
     getUserById,
     getUsers,
+    patchUserById,
 }

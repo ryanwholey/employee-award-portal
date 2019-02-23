@@ -176,19 +176,12 @@ async function getUsers(pageOptions = {}) {
 async function patchUserById(userId, userAttrs) {
     const now = moment(new Date())
 
-    const {
-        firstName: first_name,
-        lastName: last_name,
-        email,
-        isAdmin, is_admin,
-    } = userAttrs
-
     try {
         return await knex('users')
         .where({ id: userId })
         .whereNull('dtime')
         .update({
-            ..._.pickBy({first_name, last_name, email, is_admin}, _.identity),
+            ..._.pick(userAttrs, ['first_name', 'last_name', 'email', 'is_admin']),
             mtime: dateUtil.formatMySQLDatetime(now),
         })
     } catch (err) {

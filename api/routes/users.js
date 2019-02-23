@@ -80,23 +80,11 @@ router.patch('/users/:id', assertIsAdmin, async (req, res) => {
     } catch (err) {
         res.status(BAD_REQUEST).send({error: err.message})
     }
-
-    const {
-        first_name: firstName,
-        last_name: lastName,
-        email,
-        is_admin: isAdmin,
-    } = req.body
-
-    const updateFields = _.pickBy({
-        firstName,
-        lastName,
-        email,
-        isAdmin,
-    }, _.identity)
+    
+    console.log(req.body)
 
     try {
-        const user = await userService.patchUserById(req.params.id, updateFields)
+        const user = await userService.patchUserById(req.params.id, req.body)
 
         return res.status(OK).json({ data: user })
     } catch (err) {

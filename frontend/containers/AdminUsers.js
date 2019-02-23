@@ -27,8 +27,10 @@ class EditUserForm  extends React.Component {
     handleOnChange = (e) => {
         this.props.onChange(e)
 
+        const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value
+
         this.setState({
-            [e.target.name]: e.target.value,
+            [e.target.name]: value,
         })
     }
 
@@ -40,14 +42,15 @@ class EditUserForm  extends React.Component {
             isAdmin,
         } = this.state
 
+
         return (
             <form className="container container-center">
-                <input type="text" name="firstName" value={firstName} placeholder="first name" onChange={this.handleOnChange} autoComplete="off" />
-                <input type="text" name="lastName" value={lastName} placeholder="last name" onChange={this.handleOnChange} autoComplete="off"/>
-                <input type="email" name="email" value={email} placeholder="email" onChange={this.handleOnChange} autoComplete="off" />
+                <input type="text" name="firstName" value={ firstName } placeholder="first name" onChange={ this.handleOnChange } autoComplete="off" />
+                <input type="text" name="lastName" value={ lastName } placeholder="last name" onChange={ this.handleOnChange } autoComplete="off"/>
+                <input type="email" name="email" value={ email } placeholder="email" onChange={ this.handleOnChange } autoComplete="off" />
                 <div>
                     <label htmlFor="isAdmin">Is Admin</label>
-                    <input id="isAdmin" type="checkbox" placeholder="isAdmin" />
+                    <input id="isAdmin" name="isAdmin" type="checkbox" checked={ isAdmin || '' } onChange={ this.handleOnChange } />
                 </div>
                 <div>
                     <button className="button" onClick={ this.props.onSubmit }>Save</button>
@@ -56,7 +59,6 @@ class EditUserForm  extends React.Component {
             </form>
         )
     }
-
 }
 
 const CreateUserForm = ({ onChange, onSubmit, onClose }) => (
@@ -68,7 +70,7 @@ const CreateUserForm = ({ onChange, onSubmit, onClose }) => (
         <input type="password" name="confirmPassword" placeholder="Confirm password" onChange={ onChange } autoComplete="off" />
         <div>
             <label htmlFor="isAdmin">Is Admin</label>
-            <input id="isAdmin" type="checkbox" placeholder="isAdmin" />
+            <input id="isAdmin" name="isAdmin" type="checkbox" onChange={ onChange } placeholder="isAdmin" />
         </div>
         <div>
             <button className="button" onClick={ onSubmit }>Save</button>
@@ -86,7 +88,6 @@ export default class AdminHome extends React.Component {
         totalPages: null,
         showModal: false,
         form: {},
-        modal: {},
     }
 
     componentDidMount() {
@@ -106,24 +107,29 @@ export default class AdminHome extends React.Component {
     }
 
     closeModal = (e) => {
-        this.setState({ modalOptions: {} })
+        this.setState({ 
+            modalOptions: {},
+            form: {},
+        })
     }
 
     submitEditUser = (e, ...args) => {
         e.preventDefault()
+
         const {
             id,
             firstName: first_name,
             lastName: last_name,
             email,
-            isAdmin: is_admin,
         } = this.state.form
 
+        const is_admin = this.state.form.isAdmin ? 1 : 0
+
         fetchPatch(`/api/users/${id}`, {
-           first_name,
-           last_name,
-           email,
-           is_admin,
+            first_name,
+            last_name,
+            email,
+            is_admin,
         })
         .then(() => {
             this.fetchData({
@@ -132,19 +138,21 @@ export default class AdminHome extends React.Component {
             })
         })
         .then(this.closeModal)
+        .catch(console.error)
     }
 
     submitCreateUser = (e) => {
         e.preventDefault()
-        console.log(this.state.form)
+
         const {
             firstName: first_name,
             lastName: last_name,
             email,
-            isAdmin: is_admin,
             password,
         } = this.state.form
         
+        const is_admin = this.state.form.isAdmin ? 1 : 0
+
         return fetchPost('/api/users', {
             first_name,
             last_name,
@@ -159,10 +167,10 @@ export default class AdminHome extends React.Component {
             })
         })
         .then(this.closeModal)
+        .catch(console.error)
     }
 
     fetchData = (options) => {
-
         const pageOptions = {
             page: options.page + 1 || defaultPageOptions.page,
             pageSize: options.pageSize || defaultPageOptions.pageSize,
@@ -183,9 +191,9 @@ export default class AdminHome extends React.Component {
 
             this.setState({
                 users,
-                page: data.pagination.page,
-                pageSize: options.pageSize,
-                totalPages: data.pagination.total_pages,
+                page: +data.pagination.page,
+                pageSize: +options.pageSize,
+                totalPages: +data.pagination.total_pages,
             })
 
             return users
@@ -195,7 +203,11 @@ export default class AdminHome extends React.Component {
 
     handleFormFieldChange = (e) => {
         const name = e.target.name
-        const value = e.target.value
+        let value = e.target.value
+
+        if (e.target.type === 'checkbox') {
+            value = e.target.checked
+        }
 
         this.setState(({ form }) => ({
             form: {
@@ -204,6 +216,7 @@ export default class AdminHome extends React.Component {
             }
         }))
     }
+
     handleDelete = (userId) => () => {
         fetchDelete(`/api/users/${userId}`)
         .then(() => {
@@ -227,21 +240,10 @@ export default class AdminHome extends React.Component {
         return (
             <Modal
                 isOpen={ !isEmpty(modalOptions) }
-                  onRequestClose={ this.closeModal }
-                  style={{
-                      content : {
-                          top                   : '50%',
-                          left                  : '50%',
-                          right                 : 'auto',
-                          bottom                : 'auto',
-                          marginRight           : '-50%',
-                          transform             : 'translate(-50%, -50%)'
-                      }
-                  }}
-                  contentLabel="Example Modal"
-                  className="modal"
-                  ariaHideApp={false}
-              >
+                onRequestClose={ this.closeModal }
+                className="modal"
+                ariaHideApp={ false }
+            >
                 <div className="modal-body">
                     <h2 ref={subtitle => this.subtitle = subtitle}>{ modalOptions.title }</h2>
                     {modalOptions.form}
@@ -250,9 +252,30 @@ export default class AdminHome extends React.Component {
         )
     }
 
+    handleCreateUserClick = () => this.openModal({
+        title: 'Create User',
+        form: <CreateUserForm
+                onChange={ this.handleFormFieldChange }
+                onSubmit={ this.submitCreateUser }
+                onClose={ this.closeModal }
+            />,
+    })
+
+    handleEditUserClick = () => {
+        this.openModal({
+            title: 'Edit User',
+            form: <EditUserForm
+                    onChange={ this.handleFormFieldChange }
+                    onSubmit={ this.submitEditUser }
+                    onClose={ this.closeModal }
+                    formValues={ this.state.form }
+                />,
+        })
+    }
+
     renderUsers() {
-        const { 
-            users, 
+        const {
+            users,
             pageSize,
             totalPages,
             form,
@@ -264,14 +287,7 @@ export default class AdminHome extends React.Component {
 
         return (
             <React.Fragment>
-                <button className="button" onClick={ () => this.openModal({
-                    title: 'Create User',
-                    form: <CreateUserForm 
-                            onChange={this.handleFormFieldChange} 
-                            onSubmit={this.submitCreateUser} 
-                            onClose={this.closeModal}
-                        />,
-                }) }>Create User</button>
+                <button className="button" onClick={ this.handleCreateUserClick }>Create User</button>
                 <ReactTable
                     data={ users }
                     pages={ totalPages }
@@ -306,18 +322,8 @@ export default class AdminHome extends React.Component {
                                             <React.Fragment>
                                                 <button className="button" onClick={ () => {
                                                     this.setState(
-                                                        {form: row.original }, 
-                                                        () => {
-                                                            this.openModal({
-                                                                title: 'Edit User',
-                                                                form: <EditUserForm 
-                                                                        onChange={this.handleFormFieldChange} 
-                                                                        onSubmit={this.submitEditUser}
-                                                                        onClose={this.closeModal}
-                                                                        formValues={this.state.form}
-                                                                    />,
-                                                            }) 
-                                                        }
+                                                        { form: row.original },
+                                                        this.handleEditUserClick,
                                                     )}}
                                                 >
                                                     Edit

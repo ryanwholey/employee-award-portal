@@ -46,3 +46,31 @@ export const fetchPost = (url, body, options = {}) => {
 
     return _fetchAndHandle(url, fetchOptions)
 }
+
+export const fetchPatch = (url, body, options = {}) => {
+    const headerOptions = _mergeHeadersAndDefaults(options.headers)
+    const { method, headers, ...restOfOptions } = options
+
+    const fetchOptions = {
+        method: 'PATCH',
+        body: JSON.stringify(body),
+        headers: new Headers(headerOptions),
+        ...restOfOptions,
+    }
+
+    return _fetchAndHandle(url, fetchOptions)
+}
+
+export const fetchDelete = (url, body, options = {}) => {
+    const headerOptions = _mergeHeadersAndDefaults(options.headers)
+    const { method, headers, ...restOfOptions } = options
+
+    const fetchOptions = {
+        method: 'DELETE',
+        body: JSON.stringify(body),
+        headers: new Headers(headerOptions),
+        ...restOfOptions,
+    }
+
+    return _fetchAndHandle(url, fetchOptions)
+}

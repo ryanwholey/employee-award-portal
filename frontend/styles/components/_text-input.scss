@@ -1,6 +1,8 @@
 input {
     &[type="text"], &[type="password"], &[type="input"], &[type="email"] {
-        width: 400px;
+        width: 100%;
+        min-width: 300px;
+        max-width: 500px;
         height: 40px;
         font-size: 16px;
         margin: 10px 0;
@@ -9,7 +11,9 @@ input {
 }
 
 select {
-    width: 400px;
+    width: 100%;
+    min-width: 300px;
+    max-width: 500px;
     height: 40px;
     font-size: 16px;
     margin: 10px 0;

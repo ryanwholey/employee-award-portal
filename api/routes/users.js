@@ -1,5 +1,6 @@
 const _ = require('lodash')
 const express = require('express')
+const { assertIsAdmin } = require('../middleware/auth')
 const { 
     BAD_REQUEST,
     CONFLICT,
@@ -7,6 +8,7 @@ const {
     NOT_FOUND, 
     OK, 
 } = require('http-status-codes')
+const Joi = require('joi')
 
 const { 
     DuplicateEntryError,
@@ -34,6 +36,25 @@ router.get('/users/:id', async (req, res) => {
     }
 })
 
+router.get('/users', async (req, res) => {
+    const pageSize = req.query.page_size
+    const page = req.query.page
+    const paginationOptions = _.pickBy({ pageSize, page }, _.identity)
+
+    try {
+        const users = await userService.getUsers(paginationOptions)
+
+        res.status(OK).json(users)
+    } catch (err) {
+        if (err instanceof NotFoundError) {
+            return res.status(BAD_REQUEST).json({ error: err.message })
+        }
+
+        console.error(err)
+        res.status(INTERNAL_SERVER_ERROR).send()
+    }
+})
+
 router.post('/users', async (req, res) => {
     try {
         const user = await userService.createUser(req.body)
@@ -42,6 +63,7 @@ router.post('/users', async (req, res) => {
     } catch (err) {
 
         if (err.isJoi) {
+            console.log(err)
             return res.status(BAD_REQUEST).json({ error: err.details })
         } else if (err instanceof DuplicateEntryError) {
             return res.status(CONFLICT).json({ error: 'User already exists' })
@@ -49,6 +71,58 @@ router.post('/users', async (req, res) => {
 
         console.error(err)
         return res.status(INTERNAL_SERVER_ERROR).json({ error: 'Service is temporarily unavailable' })
+    }
+})
+
+router.patch('/users/:id', assertIsAdmin, async (req, res) => {
+    try {
+        Joi.validate(req.params.id, Joi.number().required().label('id'))
+    } catch (err) {
+        res.status(BAD_REQUEST).send({error: err.message})
+    }
+
+    const {
+        first_name: firstName,
+        last_name: lastName,
+        email,
+        is_admin: isAdmin,
+    } = req.body
+
+    const updateFields = _.pickBy({
+        firstName,
+        lastName,
+        email,
+        isAdmin,
+    }, _.identity)
+
+    try {
+        const user = await userService.patchUserById(req.params.id, updateFields)
+
+        return res.status(OK).json({ data: user })
+    } catch (err) {
+        if (err instanceof DuplicateEntryError) {
+            return res.status(CONFLICT).json({ error: err.message })
+        }
+
+        console.error(err)
+        res.status(INTERNAL_SERVER_ERROR).json({ error: 'Internal server error' })
+    }
+})
+
+router.delete('/users/:id', assertIsAdmin, async (req, res) => {
+    try {
+        Joi.validate(req.params.id, Joi.number().required().label('id'))
+    } catch (err) {
+        res.status(BAD_REQUEST).send({error: err.message})
+    }
+
+    try {
+        const user = await userService.deleteUserById(req.params.id)
+
+        return res.status(OK).json({ data: user })
+    } catch (err) {
+        console.error(err)
+        res.status(INTERNAL_SERVER_ERROR).json({ error: 'Internal server error' })
     }
 })
 

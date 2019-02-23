@@ -81,6 +81,7 @@ async function getUserByEmail(email) {
     try {
         user = await knex('users')
         .where({ email })
+        .whereNull('dtime')
         .first()
     } catch (err) {
         return null

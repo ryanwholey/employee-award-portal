@@ -39,8 +39,7 @@ async function isFlowTokenValid(flowToken, userId) {
 
 async function sendResetPasswordEmail(email, userId) {
     const flowToken = await createFlowToken(userId)
-    const port = process.env.API_PORT
-    const portString = port === '80' ? '' : `:${port}`
+    const portString = process.env.NODE_ENV === 'production' ? '' : `:${process.env.API_PORT}`
     const serverUrl = `http://${process.env.API_HOST}${portString}`
 
     return emailer.send({ 

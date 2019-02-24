@@ -6,7 +6,6 @@ import isEmpty from 'lodash/isEmpty'
 import downloadFile from '../utils/downloadFile'
 import { fetchGet, fetchPost, fetchPatch, fetchDelete } from '../utils/http'
 
-import 'react-table/react-table.css'
 
 const defaultPageOptions = {
     page: 0,
@@ -90,18 +89,6 @@ export default class AdminHome extends React.Component {
         showModal: false,
         form: {},
     }
-
-    // componentDidMount() {
-    //     const {
-    //         page,
-    //         pageSize,
-    //     } = this.state
-
-    //     this.fetchData({
-    //         page,
-    //         pageSize,
-    //     })
-    // }
 
     openModal = (modalOptions) => {
         this.setState({ modalOptions })

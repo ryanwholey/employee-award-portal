@@ -10,6 +10,7 @@ import Signup from './components/Signup'
 import CreateAward from './components/CreateAward'
 
 import './app.css'
+import 'react-table/react-table.css'
 import './styles/styles.scss'
 
 class LoggedInHeader extends React.Component{

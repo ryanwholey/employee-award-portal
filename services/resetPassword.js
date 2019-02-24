@@ -39,11 +39,13 @@ async function isFlowTokenValid(flowToken, userId) {
 
 async function sendResetPasswordEmail(email, userId) {
     const flowToken = await createFlowToken(userId)
+    const portString = process.env.NODE_ENV === 'production' ? '' : `:${process.env.API_PORT}`
+    const serverUrl = `http://${process.env.API_HOST}${portString}`
 
     return emailer.send({ 
         to: email,
         subject: 'Reset Password',
-        text: `http://${process.env.API_HOST}:${process.env.API_PORT}/reset_password?flow_token=${flowToken}&user_id=${userId}`,
+        text: `${serverUrl}/reset_password?flow_token=${flowToken}&user_id=${userId}`,
     })
 }
 

@@ -2,6 +2,7 @@ import React from 'react'
 import { Link, Redirect, Route, Switch } from 'react-router-dom'
 
 import AdminUsers from './AdminUsers'
+import AdminAwards from './AdminAwards'
 
 export default class AdminHome extends React.Component {
     render() {
@@ -19,7 +20,7 @@ export default class AdminHome extends React.Component {
                 <Switch>
                     <Redirect exact from="/admin" to="/admin/users" />
                     <Route path="/admin/users" render={() => <AdminUsers /> } />
-                    <Route path="/admin/awards" render={() => (<div>Award</div>) } />
+                    <Route path="/admin/awards" render={() => <AdminAwards /> } />
                 </Switch>
                 </div>
             </React.Fragment>

@@ -1,32 +1,18 @@
 import React from 'react'
-import { fetchGet, fetchPost, fetchPatch, fetchDelete } from '../utils/http'
 import ReactTable from 'react-table'
 import Modal from 'react-modal'
 import isEmpty from 'lodash/isEmpty'
 
-import 'react-table/react-table.css'
+import downloadFile from '../utils/downloadFile'
+import { fetchGet, fetchPost, fetchPatch, fetchDelete } from '../utils/http'
 
+import 'react-table/react-table.css'
 
 const defaultPageOptions = {
     page: 0,
     pageSize: 10,
 }
 
-/**
- * Downloads a text blob using browser
- * Borrowed from https://stackoverflow.com/questions/27073661/add-and-remove-div-from-body-in-javascript
- */
-function downloadFile(filename, contents) {
-    const data = new Blob([contents], {type: 'text/csv'})
-    const csvURL = window.URL.createObjectURL(data)
-    const tempLink = document.createElement('a')
-
-    tempLink.href = csvURL
-    tempLink.setAttribute('download', filename)
-    document.body.appendChild(tempLink)
-    tempLink.click()
-    document.body.removeChild(tempLink)
-}
 
 class EditUserForm  extends React.Component {
 
@@ -105,17 +91,17 @@ export default class AdminHome extends React.Component {
         form: {},
     }
 
-    componentDidMount() {
-        const {
-            page,
-            pageSize,
-        } = this.state
+    // componentDidMount() {
+    //     const {
+    //         page,
+    //         pageSize,
+    //     } = this.state
 
-        this.fetchData({
-            page,
-            pageSize,
-        })
-    }
+    //     this.fetchData({
+    //         page,
+    //         pageSize,
+    //     })
+    // }
 
     openModal = (modalOptions) => {
         this.setState({ modalOptions })
@@ -326,16 +312,12 @@ export default class AdminHome extends React.Component {
             form,
         } = this.state
 
-        if (!users) {
-            return <span>Loading...</span>
-        }
-
         return (
             <React.Fragment>
                 <button className="button" onClick={ this.handleCreateUserClick }>Create User</button>
                 <button className="button" onClick={ this.handleExportToCsv }>Export to CSV</button>
                 <ReactTable
-                    data={ users }
+                    data={ users || [] }
                     pages={ totalPages }
                     columns={
                         [
@@ -382,13 +364,12 @@ export default class AdminHome extends React.Component {
                             }
                         ]
                     }
-                    manual
-                    defaultPageSize={pageSize}
-                    onFetchData={this.fetchData}
+                    defaultPageSize={ pageSize }
+                    onFetchData={ this.fetchData }
                     className="-striped"
                 >
                 </ReactTable>
-                {this.renderModal()}
+                { this.renderModal() }
             </React.Fragment>
         )
     }

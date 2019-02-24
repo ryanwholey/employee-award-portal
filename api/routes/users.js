@@ -41,8 +41,12 @@ router.get('/users', async (req, res) => {
     const page = req.query.page
     const paginationOptions = _.pickBy({ pageSize, page }, _.identity)
 
+    const queryParams = {
+        ids: _.get(req, 'query.ids', '').split(',').filter(_.identity)
+    }
+
     try {
-        const users = await userService.getUsers(paginationOptions)
+        const users = await userService.getUsers(queryParams, paginationOptions)
 
         res.status(OK).json(users)
     } catch (err) {

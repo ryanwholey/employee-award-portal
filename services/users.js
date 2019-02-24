@@ -134,7 +134,7 @@ async function getUserById(id) {
     return returnUserObject(user)
 }
 
-async function getUsers(pageOptions = {}) {
+async function getUsers(queryParams = {}, pageOptions = {}) {
     const defaultPageOptions = {
         pageSize: 10,
         page: 1,
@@ -146,9 +146,17 @@ async function getUsers(pageOptions = {}) {
 
     const pageSize = options.pageSize
     const page = options.page < 1 ? 1 : options.page
-    const [ res ] = await knex('users')
+
+    const countQuery = knex('users')
     .count('*')
     .whereNull('dtime')
+
+    if (!_.isEmpty(queryParams.ids)) {
+        countQuery
+        .whereIn('id', queryParams.ids)
+    }
+
+    const [ res ] = await countQuery
 
     const count = res['count(*)']
     const totalPages = Math.ceil(count / pageSize) || 1
@@ -157,11 +165,16 @@ async function getUsers(pageOptions = {}) {
         throw new NotFoundError(`Page ${page} requested, total pages ${totalPages}`)
     }
     const offset = (pageSize * page) - pageSize
-    const users = await knex('users')
+    const query = knex('users')
     .select(['ctime', 'first_name', 'last_name', 'is_admin', 'id', 'region', 'mtime', 'email'])
     .offset(offset)
     .limit(pageSize)
     .whereNull('dtime')
+
+    if (!_.isEmpty(queryParams.ids)) {
+        query
+        .whereIn('id', queryParams.ids)
+    }
 
     return {
         pagination: {
@@ -169,7 +182,7 @@ async function getUsers(pageOptions = {}) {
             page_size: pageSize,
             total_pages: totalPages,
         },
-        data: users,
+        data: await query,
     }
 }
 

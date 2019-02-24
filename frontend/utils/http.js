@@ -1,3 +1,5 @@
+const _ = require('lodash')
+
 const _fetchAndHandle = (...args) => {
     return fetch(...args)
     .then((res) => {
@@ -31,6 +33,38 @@ export const fetchGet = (url, options = {}) => {
     }
 
     return _fetchAndHandle(url, fetchOptions)
+}
+
+export const fetchAll = (url, options = {}) => {
+    return fetchGet(url, options)
+    .then((body) => {
+        if (body.pagination && body.pagination.total_pages > 1) {
+            let range
+            if (body.pagination.total_pages > 2) {
+                range = _.range(2, body.pagination.total_pages + 1)
+            } else {
+                range = [ 2 ]
+            }
+
+            let queryParams = new URL(url).search.replace('?','')
+            if (queryParams !== '') {
+                '&' + queryParams
+            }
+
+            return Promise.all([
+                body,
+                ...range.map((page) => fetchGet(`${url}?page=${page}&page_size=${body.pagination.page_size}${queryParams}`))
+            ])
+        } else {
+            return Promise.resolve([body])
+        }
+    })
+    .then((responses) => {
+        return responses.reduce((bodies, { data }) => ([
+            ...bodies,
+            ...data,
+        ]), [])
+    })
 }
 
 export const fetchPost = (url, body, options = {}) => {

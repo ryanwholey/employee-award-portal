@@ -10,6 +10,10 @@ function selectAwards() {
             for (row of rows) {
                 console.log(`${row['id']} ${row['type']} ${row['creator']} ${row['recipient']} ${row['granted']}`);
             }
+            return rows.map((award) => {
+                return `{\"id\": ${award.id}, \"type\": \"${award.type}\", \"creator\": \"${award.creator}",
+                    \"recipient\": \"${award.recipient}\", \"granted\": \"${award.granted}}\"`;
+            });
         })
         .catch((err) => { console.log( err); throw err })
 };

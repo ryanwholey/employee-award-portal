@@ -30,9 +30,9 @@ router.post('/awards', (req, res) => {
 
 router.get('/awards/', (req, res) => {
     awardService.selectAwards()
-        .then(val => {
+        .then((val) => {
             console.log("Finished selecting awards");
-            res.status(203).send("Check console for selections. Val = " + val);
+            res.status(203).send(`Check console for selections. Val = ${val.join('\n')}`);
         })
         .catch(val => {
             console.log('Error selecting awards');

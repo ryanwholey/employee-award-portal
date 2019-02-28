@@ -1,6 +1,6 @@
 
 exports.up = function(knex, Promise) {
-    knex.schema.hasTable('password_reset_flow_token').then(function (exists) {
+    return knex.schema.hasTable('password_reset_flow_token').then(function (exists) {
         if (!exists) {
             return knex.schema.createTable('password_reset_flow_token', (table) => {
                 table.increments().primary()

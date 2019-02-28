@@ -1,6 +1,6 @@
 
 exports.up = function(knex, Promise) {
-    knex.schema.hasTable('award_types').then(function (exists) {
+    return knex.schema.hasTable('award_types').then(function (exists) {
         if (!exists) {
             return knex.schema.createTable('award_types', (table) => {
                 table.increments().primary()

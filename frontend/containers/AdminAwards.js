@@ -5,7 +5,7 @@ import ReactTable from 'react-table'
 
 import downloadFile from '../utils/downloadFile'
 import { fetchAll, fetchGet } from '../utils/http' 
-
+import AwardLineChart from '../components/AwardLineChart'
 
 const defaultPageOptions = {
     page: 0,
@@ -29,7 +29,7 @@ const fetchAwards = (url) => {
                     creator: 1,
                     recipient: 2,
                     granted: '2019-02-23T08:16:50.000Z',
-                    ctime: '2019-02-23T08:16:50.000Z',
+                    ctime: '2019-01-23T08:16:50.000Z',
                 },
                 {
                     id: 2,
@@ -38,6 +38,70 @@ const fetchAwards = (url) => {
                     recipient: 8,
                     granted: '2019-02-23T08:16:50.000Z',
                     ctime: '2019-02-23T08:16:50.000Z',
+                },
+                {
+                    id: 3,
+                    type: 1,
+                    creator: 1,
+                    recipient: 2,
+                    granted: '2019-02-27T08:16:50.000Z',
+                    ctime: '2019-02-25T08:16:50.000Z',
+                },
+                {
+                    id: 4,
+                    type: 1,
+                    creator: 1,
+                    recipient: 2,
+                    granted: '2019-02-27T08:16:50.000Z',
+                    ctime: '2019-02-27T08:16:50.000Z',
+                },
+                {
+                    id: 5,
+                    type: 1,
+                    creator: 1,
+                    recipient: 2,
+                    granted: '2019-02-28T08:16:50.000Z',
+                    ctime: '2019-02-29T08:16:50.000Z',
+                },
+                {
+                    id: 6,
+                    type: 1,
+                    creator: 1,
+                    recipient: 2,
+                    granted: '2019-03-01T08:16:50.000Z',
+                    ctime: '2019-02-29T08:16:50.000Z',
+                },
+                {
+                    id: 7,
+                    type: 1,
+                    creator: 1,
+                    recipient: 2,
+                    granted: '2019-03-03T08:16:50.000Z',
+                    ctime: '2019-02-29T08:16:50.000Z',
+                },
+                {
+                    id: 8,
+                    type: 1,
+                    creator: 1,
+                    recipient: 2,
+                    granted: '2019-03-03T08:16:50.000Z',
+                    ctime: '2019-02-29T08:16:50.000Z',
+                },
+                {
+                    id: 9,
+                    type: 1,
+                    creator: 1,
+                    recipient: 2,
+                    granted: '2019-03-03T08:16:50.000Z',
+                    ctime: '2019-02-29T08:16:50.000Z',
+                },
+                {
+                    id: 10,
+                    type: 1,
+                    creator: 1,
+                    recipient: 2,
+                    granted: '2019-03-15T08:16:50.000Z',
+                    ctime: '2019-02-29T08:16:50.000Z',
                 },
             ]
         }
@@ -65,6 +129,7 @@ export default class AdminAwards extends React.Component {
         page: 0,
         pageSize: 10,
         totalPages: null,
+        view: 'table',
     }
 
     fetchData = (options = {}) => {
@@ -138,7 +203,31 @@ export default class AdminAwards extends React.Component {
         downloadFile('awards.csv', csv)
     }
 
-    renderAwards() {
+    handleViewChange = (e) => {
+        e.preventDefault()
+        this.setState({
+            view: e.target.id
+        })
+    }
+
+    renderGraph() {
+        const { awards } = this.state
+
+        if (_.isEmpty(awards)) {
+            return null
+        }
+
+        return (
+            <React.Fragment>
+                <h2 style={{ 'text-align': 'center' }}>Number Awards Granted By Date</h2>
+                <AwardLineChart
+                    data={ awards }
+                />
+            </React.Fragment>
+        )
+    }
+
+    renderTable() {
         const {
             awards,
             page,
@@ -191,7 +280,11 @@ export default class AdminAwards extends React.Component {
         return (
             <div>
                 <h1 className="header">Awards Console</h1>
-                {this.renderAwards()}
+                <div>
+                    <a href="" className="nav-link" onClick={this.handleViewChange}><span id="table" >Table</span></a>
+                    <a href="" className="nav-link" onClick={this.handleViewChange}><span id="graph" >Graph</span></a>
+                </div>
+                {this.state.view === 'table' ? this.renderTable() : this.renderGraph()}
             </div>
         )
     }

@@ -1,5 +1,10 @@
 const express = require('express')
 const router = express.Router()
+const _ = require('lodash')
+const {
+    DuplicateEntryError,
+    NotFoundError,
+} = require('../../services/errors')
 
 const awardService = require('../../services/awards')
 
@@ -28,16 +33,38 @@ router.post('/awards', (req, res) => {
         });
 });
 
-router.get('/awards/', (req, res) => {
-    awardService.selectAwards()
+router.get('/awards/', async (req, res) => {
+    const pageSize = req.query.page_size;
+    const page = req.query.page;
+    const paginationOptions = _.pickBy({pageSize, page}, _.identity);
+
+    const queryParams = {
+        ids: _.get(req, 'query.ids', '').split(',').filter(_.identity)
+    };
+
+    try {
+        const awards = await awardService.selectAwards(queryParams, paginationOptions);
+
+        res.status(200).json(awards)
+    } catch (err) {
+        if (err instanceof NotFoundError) {
+            return res.status(400).json({error: err.message})
+        }
+        return res.status(500).json({error: err.message})
+    }
+
+
+    /*awardService.selectAwards()
         .then((val) => {
-            console.log("Finished selecting awards");
-            res.status(203).send(`Check console for selections. Val = ${val.join('\n')}`);
+            console.log("Finished selecting awards\n" + val[0].creator);
+
+            //res.status(203).send(`Check console for selections. Val = ${val.join('\n')}`);
+            res.status(203).send(`Check console for selections. ` + val.creator);
         })
         .catch(val => {
             console.log('Error selecting awards');
             res.status(501).send('Error selecting awards. Val = ' + val);
-        })
+        })*/
 });
 
-module.exports = router
+module.exports = router;

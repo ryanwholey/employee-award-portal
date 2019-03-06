@@ -1,6 +1,7 @@
 import React from 'react';
 import Cookies from 'universal-cookie'
 import { fetchPost } from '../utils/http'
+import { toast } from 'react-toastify'
 
 
 export default class Credentials extends React.Component {
@@ -19,6 +20,10 @@ export default class Credentials extends React.Component {
     this.cookies = new Cookies()
   }
 
+  showToast = (message, props) => {
+      toast(message, props)
+  }
+
   handleSubmit(e) {
     e.preventDefault();
 
@@ -33,7 +38,7 @@ export default class Credentials extends React.Component {
         window.location = '/'
     })
     .catch((e) => {
-        console.error(e.message)
+        this.showToast(e.message, {type: 'error'})
     })
   }
 

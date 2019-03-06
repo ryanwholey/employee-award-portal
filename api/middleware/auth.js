@@ -1,3 +1,4 @@
+const _ = require('lodash')
 const { UNAUTHORIZED } = require('http-status-codes')
 
 const cookieLib = require('../lib/cookies')
@@ -48,6 +49,24 @@ async function assertIsAdmin(req, res, next) {
     next()
 }
 
+async function assertIsAdminOrSelf(req, res, next) {
+    const isAdmin = _.get(req, 'user.isAdmin')
+    const userId = _.get(req, 'user.id')
+
+    let isSelf
+    if (!userId) {
+        isSelf = false
+    } else {
+        isSelf = req.params.id === 'me' || req.params.id === userId
+    }
+
+    if (isSelf || isAdmin) {
+        next()
+    } else {
+        return res.status(UNAUTHORIZED).send()
+    }
+}
+
 async function assertIsNotAdmin(req, res, next) {
     if (!req.user) {
         return res.status(UNAUTHORIZED).send()
@@ -61,6 +80,7 @@ async function assertIsNotAdmin(req, res, next) {
 module.exports = {
     assertLoggedIn,
     assertIsAdmin,
+    assertIsAdminOrSelf,
     assertIsNotAdmin,
     convertTokenToUser,
 }

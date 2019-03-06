@@ -1,6 +1,6 @@
 const _ = require('lodash')
 const express = require('express')
-const { assertIsAdmin } = require('../middleware/auth')
+const { assertIsAdmin, assertIsAdminOrSelf } = require('../middleware/auth')
 const { 
     BAD_REQUEST,
     CONFLICT,
@@ -20,7 +20,22 @@ const router = express.Router()
 
 router.get('/users/:id', async (req, res) => {
     try {
-        const user = await userService.getUserById(req.params.id)
+        await Joi.validate(req.params.id, [
+            Joi.string().regex(/me/).label('id'),
+            Joi.number().required().label('id')
+        ])
+    } catch (err) {
+        return res.status(BAD_REQUEST).send({error: err.message})
+    }
+
+    let userId = req.params.id
+
+    if (userId === 'me' && _.get(req, 'user.id')) {
+        userId = req.user.id
+    }
+
+    try {
+        const user = await userService.getUserById(userId)
 
         return res.status(OK).json({ data: user })
     } catch (err) {
@@ -78,17 +93,22 @@ router.post('/users', async (req, res) => {
     }
 })
 
-router.patch('/users/:id', assertIsAdmin, async (req, res) => {
+router.patch('/users/:id', assertIsAdminOrSelf, async (req, res) => {
     try {
-        Joi.validate(req.params.id, Joi.number().required().label('id'))
+        await Joi.validate(req.params.id, [
+            Joi.string().regex(/me/).label('id'),
+            Joi.number().required().label('id')
+        ])
     } catch (err) {
-        res.status(BAD_REQUEST).send({error: err.message})
+        return res.status(BAD_REQUEST).send({error: err.message})
     }
     
-    console.log(req.body)
-
     try {
-        const user = await userService.patchUserById(req.params.id, req.body)
+        let userId = req.params.id
+        if (userId === 'me') {
+            userId = req.user.id
+        }
+        const user = await userService.patchUserById(userId, req.body)
 
         return res.status(OK).json({ data: user })
     } catch (err) {
@@ -103,7 +123,7 @@ router.patch('/users/:id', assertIsAdmin, async (req, res) => {
 
 router.delete('/users/:id', assertIsAdmin, async (req, res) => {
     try {
-        Joi.validate(req.params.id, Joi.number().required().label('id'))
+        await Joi.validate(req.params.id, Joi.number().required().label('id'))
     } catch (err) {
         res.status(BAD_REQUEST).send({error: err.message})
     }

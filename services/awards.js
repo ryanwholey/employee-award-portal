@@ -1,26 +1,14 @@
-const knex = require('../db/knex')
-const _ = require('lodash')
+const knex = require('../db/knex');
+const _ = require('lodash');
+const moment = require('moment');
 
 const { NotFoundError, DuplicateEntryError } = require('./errors')
 
-function selectAwards() {
-    console.log('I\'ll try selecting awards');
-    //const thisTime = moment(Date.now());
-    return knex.from('awards')
-        .select("id", "type", "creator", "recipient", "granted")
-
-        /*.where(knex.raw('?? < ?', ['granted', thisTime]))*/
-        .then((rows) => {
-            return JSON.stringify((rows) => {
-                return `{\"id\": ${row.id}, \"type\": \"${row.type}\", \"creator\": \"${row.creator}",
-                    \"recipient\": \"${row.recipient}\", \"granted\": \"${row.granted}}\"`;
-            });
-        })
-        .catch((err) => { console.log( err); throw err })
-};
-
-
 async function selectAwards(queryParams = {}, pageOptions = {}) {
+    /*const thisTime = moment(Date.now());
+    console.log('time = ' + thisTime);
+    let sqlTime = thisTime.format('YYYY-MM-DD HH:mm:ss');
+    console.log('sqlTime = ' + sqlTime);*/
     const defaultPageOptions = {
         pageSize: 10,
         page: 1,
@@ -72,6 +60,27 @@ async function selectAwards(queryParams = {}, pageOptions = {}) {
     }
 }
 
+
+async function selectAwardsToMail() {
+    const subQ1 = knex.select('id', 'type', 'creator', 'recipient', 'granted')
+        .from('awards')
+        .whereNull('dtime')
+        .as('not_deleted');
+
+    const query = knex.select('*')
+        .from(subQ1)
+        .whereRaw('TIMEDIFF(NOW(), granted) > 0');
+
+    /*DEBUGGING: will output the constructed sql query
+    const toStringQuery = query.toString();
+    console.log('NEW QUERY = ' + toStringQuery);*/
+
+    return {
+        data: await query,
+    }
+}
+
+
 /**
  * @param {string} params.type      - type of award
  * @param {string} params.creator   - email address of award creator
@@ -102,4 +111,5 @@ function createAward(params) {
 module.exports = {
     createAward,
     selectAwards,
+    selectAwardsToMail,
 }

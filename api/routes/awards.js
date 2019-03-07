@@ -1,10 +1,10 @@
-const express = require('express')
-const router = express.Router()
-const _ = require('lodash')
+const express = require('express');
+const router = express.Router();
+const _ = require('lodash');
 const {
     DuplicateEntryError,
     NotFoundError,
-} = require('../../services/errors')
+} = require('../../services/errors');
 
 const awardService = require('../../services/awards')
 
@@ -30,7 +30,7 @@ router.post('/awards', (req, res) => {
         .catch(() => {
             console.log('Error creating award');
             res.status(501).send('Error creating award');
-        });
+        })
 });
 
 router.get('/awards/', async (req, res) => {
@@ -52,19 +52,8 @@ router.get('/awards/', async (req, res) => {
         }
         return res.status(500).json({error: err.message})
     }
-
-
-    /*awardService.selectAwards()
-        .then((val) => {
-            console.log("Finished selecting awards\n" + val[0].creator);
-
-            //res.status(203).send(`Check console for selections. Val = ${val.join('\n')}`);
-            res.status(203).send(`Check console for selections. ` + val.creator);
-        })
-        .catch(val => {
-            console.log('Error selecting awards');
-            res.status(501).send('Error selecting awards. Val = ' + val);
-        })*/
 });
 
-module.exports = router;
+
+
+module.exports = router

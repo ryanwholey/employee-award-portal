@@ -7,6 +7,7 @@ const config = require('./config')
 const knex = require('../db/knex')
 const routes = require('./routes')
 const authMiddleware = require('./middleware/auth')
+const scheduler = require('../bin/startEmailWorker');
 
 const app = express()
 
@@ -61,6 +62,8 @@ process.on('unhandledRejection', (error) => {
     console.error(error.stack)
     server.kill()
 });
+
+scheduler.scheduleAwards();
 
 module.exports = {
     initServer,

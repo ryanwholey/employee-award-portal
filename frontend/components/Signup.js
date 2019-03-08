@@ -3,6 +3,8 @@ import Cookies from 'universal-cookie'
 import Header from './Header';
 import { fetchPost } from '../utils/http'
 import { Link } from 'react-router-dom'
+import { ToastContainer, toast } from 'react-toastify'
+
 
 export default class Signup extends React.Component {
 
@@ -56,8 +58,12 @@ export default class Signup extends React.Component {
       this.props.history.push('/')
     })
     .catch((err) => {
-      console.error(err)
+        this.showToast(err.message, {type: 'error'})
     })
+  }
+
+  showToast(message, props) {
+    toast(message, props)
   }
 
   render() {
@@ -122,6 +128,7 @@ export default class Signup extends React.Component {
         </form>
         <Link to="/login">Login</Link>
         <Link to="/forgot_password">Forgot Password</Link>
+        <ToastContainer />
       </div>
     );
   }

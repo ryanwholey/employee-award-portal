@@ -1,18 +1,91 @@
-const knex = require('../db/knex')
+const knex = require('../db/knex');
+const _ = require('lodash');
+const moment = require('moment');
 
-function selectAwards() {
-    console.log('I\'ll try selecting awards');
-    //const thisTime = moment(Date.now());
-    return knex.from('awards')
-        .select("id", "type", "creator", "recipient", "granted")
-        /*.where(knex.raw('?? < ?', ['granted', thisTime]))*/
-        .then((rows) => {
-            for (row of rows) {
-                console.log(`${row['id']} ${row['type']} ${row['creator']} ${row['recipient']} ${row['granted']}`);
-            }
-        })
-        .catch((err) => { console.log( err); throw err })
-};
+const { NotFoundError, DuplicateEntryError } = require('./errors')
+
+//Retrieve all awards that meet queryParams
+async function selectAwards(queryParams = {}, pageOptions = {}) {
+    /*const thisTime = moment(Date.now());
+    console.log('time = ' + thisTime);
+    let sqlTime = thisTime.format('YYYY-MM-DD HH:mm:ss');
+    console.log('sqlTime = ' + sqlTime);*/
+    const defaultPageOptions = {
+        pageSize: 10,
+        page: 1,
+    };
+    const options = {
+        ...defaultPageOptions,
+        ...pageOptions,
+    };
+
+    const pageSize = options.pageSize;
+    const page = options.page < 1 ? 1: options.page;
+
+    const countQuery = knex('awards')
+        .count('*')
+        .whereNull('dtime');
+
+    if(!_.isEmpty(queryParams.ids)) {
+        countQuery
+            .whereIn('id', queryParams.ids)
+    }
+
+    const [ res ] = await countQuery;
+
+    const count = res['count(*)'];
+    const totalPages = Math.ceil(count / pageSize) || 1;
+
+    if (page > totalPages) {
+        throw new NotFoundError(`Page ${page} requested, total pages ${totalPages}`)
+    }
+    const offset = (pageSize * page) - pageSize;
+    const query = knex('awards')
+        .select(['id', 'type', 'creator', 'recipient', 'granted'])
+        .offset(offset)
+        .limit(pageSize)
+        .whereNull('dtime')
+
+    if(!_.isEmpty(queryParams.ids)) {
+        query
+            .whereIn('id', queryParams.ids)
+    }
+
+    return {
+        pagination: {
+            page,
+            page_size: pageSize,
+            total_pages: totalPages,
+        },
+        data: await query,
+    }
+}
+
+//Retrieve all awards created before now that are not in the emails table
+//I could make this a particular case within selectAwards(), but would take more time
+async function selectAwardsToMail() {
+    const subQ1 = knex.select('*')
+        .from('awards')
+        .whereNull('dtime')
+        .whereRaw('TIMEDIFF(NOW(), granted) > 0')
+        .as('beforeNow');
+
+    const query2 = knex.select('beforeNow.id','beforeNow.type','beforeNow.creator','beforeNow.recipient',
+        'beforeNow.granted')
+        .from(subQ1)
+        .joinRaw('LEFT JOIN emails on beforeNow.id=emails.id')
+        .whereRaw('emails.id IS NULL');
+
+    //DEBUGGING: will output the constructed sql query
+    /*const toStringQuery1 = query1.toString();
+    console.log('NEW QUERY = ' + toStringQuery1);
+    const toStringQuery2 = query2.toString();
+    console.log('BIG QUERY = ' + toStringQuery2);*/
+
+    return {
+        data: await query2,
+    }
+}
 
 
 /**
@@ -45,4 +118,5 @@ function createAward(params) {
 module.exports = {
     createAward,
     selectAwards,
+    selectAwardsToMail,
 }

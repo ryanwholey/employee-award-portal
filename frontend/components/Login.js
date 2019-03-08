@@ -2,7 +2,7 @@ import React from 'react';
 import Header from './Header';
 import Credentials from './Credentials';
 import { Link } from 'react-router-dom'
-
+import { ToastContainer } from 'react-toastify'
 
 export default class Login extends React.Component {
 
@@ -27,6 +27,7 @@ export default class Login extends React.Component {
         <Credentials />
         <Link to="/signup">New User</Link>
         <Link to="/forgot_password">Forgot Password</Link>
+        <ToastContainer />
       </div>
     );
   }

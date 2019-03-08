@@ -1,10 +1,10 @@
 import React from 'react';
+import uuid from 'uuid';
+
 import NewAward from './NewAward';
 import Header from './Header';
 import AwardList from './AwardList';
 import EditModal from './EditModal';
-import uuid from 'uuid';
-
 
 export default class CreateAward extends React.Component {
   constructor(props) {

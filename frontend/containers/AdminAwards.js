@@ -1,9 +1,13 @@
 import React from 'react'
 import moment from 'moment'
 import get from 'lodash/get'
+import isEmpty from 'lodash/isEmpty'
+import flatMap from 'lodash/flatMap'
+import uniq from 'lodash/uniq'
 import ReactTable from 'react-table'
 
 import downloadFile from '../utils/downloadFile'
+import { ToastContainer, toast } from 'react-toastify'
 import { fetchAll, fetchGet } from '../utils/http' 
 import AwardLineChart from '../components/AwardLineChart'
 
@@ -148,13 +152,9 @@ export default class AdminAwards extends React.Component {
             awardTypes = _awardTypes
             awards = _awards
 
-            const ids = _(awards.body)
-            .chain()
-            .flatMap(({creator, recipient}) => ([ creator, recipient ]))
-            .uniq()
-            .valueOf()
+            const ids = uniq(flatMap(awards.body, ({ creator, recipient }) => ([ creator, recipient ])))
 
-            if (_.isEmpty(ids)) {
+            if (isEmpty(ids)) {
                 return Promise.resolve([])
             }
 
@@ -169,8 +169,14 @@ export default class AdminAwards extends React.Component {
                 awards: fullAwards
             })
         })
-        .catch(console.error)
+        .catch((err) => {
+            this.showToast(err.message, {type: 'error'})
+        })
 
+    }
+
+    showToast = (message, props) => {
+        toast(message, props)
     }
     
     handleExportToCsv = () => {
@@ -213,13 +219,13 @@ export default class AdminAwards extends React.Component {
     renderGraph() {
         const { awards } = this.state
 
-        if (_.isEmpty(awards)) {
+        if (isEmpty(awards)) {
             return null
         }
 
         return (
             <React.Fragment>
-                <h2 style={{ 'text-align': 'center' }}>Number Awards Granted By Date</h2>
+                <h2 style={{ 'textAlign': 'center' }}>Number Awards Granted By Date</h2>
                 <AwardLineChart
                     data={ awards }
                 />
@@ -235,7 +241,6 @@ export default class AdminAwards extends React.Component {
             totalPages,
         } = this.state
 
-        
         return (          
             <React.Fragment>
                 <button className="button" onClick={ this.handleExportToCsv }>Export to CSV</button>
@@ -267,6 +272,7 @@ export default class AdminAwards extends React.Component {
                             }
                         ]
                     }
+                    manual
                     defaultPageSize={ pageSize }
                     onFetchData={ this.fetchData }
                     className="-striped"
@@ -285,6 +291,7 @@ export default class AdminAwards extends React.Component {
                     <a href="" className="nav-link" onClick={this.handleViewChange}><span id="graph" >Graph</span></a>
                 </div>
                 {this.state.view === 'table' ? this.renderTable() : this.renderGraph()}
+                <ToastContainer />
             </div>
         )
     }

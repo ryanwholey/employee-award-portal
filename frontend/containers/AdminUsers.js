@@ -2,6 +2,8 @@ import React from 'react'
 import ReactTable from 'react-table'
 import Modal from 'react-modal'
 import isEmpty from 'lodash/isEmpty'
+import { ToastContainer, toast } from 'react-toastify'
+
 
 import downloadFile from '../utils/downloadFile'
 import { fetchGet, fetchPost, fetchPatch, fetchDelete } from '../utils/http'
@@ -56,6 +58,7 @@ class EditUserForm  extends React.Component {
                     <button className="button" onClick={ this.props.onSubmit }>Save</button>
                     <button className="button" onClick={ this.props.onClose }>Close</button>
                 </div>
+                 <ToastContainer />
             </form>
         )
     }
@@ -76,6 +79,7 @@ const CreateUserForm = ({ onChange, onSubmit, onClose }) => (
             <button className="button" onClick={ onSubmit }>Save</button>
             <button className="button" onClick={ onClose }>Close</button>
         </div>
+         <ToastContainer />
     </form>
 )
 
@@ -95,6 +99,9 @@ export default class AdminHome extends React.Component {
     }
 
     closeModal = (e) => {
+        if (typeof e !== 'undefined' && typeof e.preventDefault === 'function') {
+            e.preventDefault()
+        }
         this.setState({ 
             modalOptions: {},
             form: {},
@@ -126,7 +133,9 @@ export default class AdminHome extends React.Component {
             })
         })
         .then(this.closeModal)
-        .catch(console.error)
+        .catch((err) => {
+            this.showToast(err.message, {type: 'error'})
+        })
     }
 
     submitCreateUser = (e) => {
@@ -155,7 +164,9 @@ export default class AdminHome extends React.Component {
             })
         })
         .then(this.closeModal)
-        .catch(console.error)
+        .catch((err) => {
+            this.showToast(err.message, {type: 'error'})
+        })
     }
 
     fetchData = (options) => {
@@ -186,7 +197,13 @@ export default class AdminHome extends React.Component {
 
             return users
         })
-        .catch(console.error)
+        .catch((err) => {
+            this.showToast(err.message, { type: 'error' })
+        })
+    }
+
+    showToast = (message, props) => {
+        toast(message, props)
     }
 
     handleExportToCsv = () => {
@@ -244,6 +261,9 @@ export default class AdminHome extends React.Component {
             })
         })
         .then(this.closeModal)
+        .catch((err) => {
+            this.showToast(err.message, {type: 'error'})
+        })
     }
 
     renderModal() {
@@ -293,10 +313,11 @@ export default class AdminHome extends React.Component {
 
     renderUsers() {
         const {
-            users,
+            form,
+            modalOptions,
             pageSize,
             totalPages,
-            form,
+            users,
         } = this.state
 
         return (
@@ -354,9 +375,11 @@ export default class AdminHome extends React.Component {
                     defaultPageSize={ pageSize }
                     onFetchData={ this.fetchData }
                     className="-striped"
+                    manual
                 >
                 </ReactTable>
                 { this.renderModal() }
+                { isEmpty(modalOptions) ? <ToastContainer /> : null}
             </React.Fragment>
         )
     }

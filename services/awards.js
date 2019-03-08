@@ -62,21 +62,33 @@ async function selectAwards(queryParams = {}, pageOptions = {}) {
 
 
 async function selectAwardsToMail() {
-    const subQ1 = knex.select('id', 'type', 'creator', 'recipient', 'granted')
+    const subQ1 = knex.select('*')
         .from('awards')
         .whereNull('dtime')
-        .as('not_deleted');
+        .whereRaw('TIMEDIFF(NOW(), granted) > 0')
+        .as('beforeNow');
 
-    const query = knex.select('*')
+    const query2 = knex.select('beforeNow.id','beforeNow.type','beforeNow.creator','beforeNow.recipient',
+        'beforeNow.granted')
         .from(subQ1)
-        .whereRaw('TIMEDIFF(NOW(), granted) > 0');
+        .joinRaw('LEFT JOIN emails on beforeNow.id=emails.id')
+        .whereRaw('emails.id IS NULL');
 
-    /*DEBUGGING: will output the constructed sql query
-    const toStringQuery = query.toString();
-    console.log('NEW QUERY = ' + toStringQuery);*/
+    /*
+        const query2 = knex.select('*')
+            .from(query1)
+            .as('q1')
+            .joinRaw('left join emails on 'q1.'id = emails.id')
+    * */
+
+    //DEBUGGING: will output the constructed sql query
+    /*const toStringQuery1 = query1.toString();
+    console.log('NEW QUERY = ' + toStringQuery1);
+    const toStringQuery2 = query2.toString();
+    console.log('BIG QUERY = ' + toStringQuery2);*/
 
     return {
-        data: await query,
+        data: await query2,
     }
 }
 

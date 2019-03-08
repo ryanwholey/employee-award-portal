@@ -4,6 +4,7 @@ const moment = require('moment');
 
 const { NotFoundError, DuplicateEntryError } = require('./errors')
 
+//Retrieve all awards that meet queryParams
 async function selectAwards(queryParams = {}, pageOptions = {}) {
     /*const thisTime = moment(Date.now());
     console.log('time = ' + thisTime);
@@ -60,7 +61,8 @@ async function selectAwards(queryParams = {}, pageOptions = {}) {
     }
 }
 
-
+//Retrieve all awards created before now that are not in the emails table
+//I could make this a particular case within selectAwards(), but would take more time
 async function selectAwardsToMail() {
     const subQ1 = knex.select('*')
         .from('awards')
@@ -73,13 +75,6 @@ async function selectAwardsToMail() {
         .from(subQ1)
         .joinRaw('LEFT JOIN emails on beforeNow.id=emails.id')
         .whereRaw('emails.id IS NULL');
-
-    /*
-        const query2 = knex.select('*')
-            .from(query1)
-            .as('q1')
-            .joinRaw('left join emails on 'q1.'id = emails.id')
-    * */
 
     //DEBUGGING: will output the constructed sql query
     /*const toStringQuery1 = query1.toString();

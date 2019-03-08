@@ -63,7 +63,7 @@ process.on('unhandledRejection', (error) => {
     server.kill()
 });
 
-//scheduler.scheduleMail()
+scheduler.scheduleAwards();
 
 module.exports = {
     initServer,

@@ -18,9 +18,7 @@ const defaultPageOptions = {
 
 // TODO: remove when awards endpoint is finalized
 const fetchAwards = (url) => {
-    // return fetchGet(url)
-    // .catch((err) => {
-    Promise.resolve({
+    return Promise.resolve({
         pagination: {
             page: 1,
             page_size: 10,

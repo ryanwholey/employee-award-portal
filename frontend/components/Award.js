@@ -5,7 +5,6 @@ const styles = StyleSheet.create({
   page: {
     flexDirection: 'row',
     backgroundColor: 'white'
-    
   },
 
   container: {
@@ -30,13 +29,20 @@ const styles = StyleSheet.create({
 });
 
 const createDoc = (props) => {
+  const {
+    awardType,
+    granted,
+    creator,
+    recipient,
+  } = props.award
+
   const myDoc = (
     <Document>
       <Page style={styles.page} orientation='landscape' size='A4'>
         <View style={styles.container}>
-          <Text style={styles.header}>Congratulations, {props.award.name}!</Text>
-          <Text style={styles.message}>You've been awarded the {props.award.awardType} award by UserName.</Text>
-          <Text style={styles.date}>{props.award.createdAt}</Text>
+          <Text style={styles.header}>Congratulations, {recipient.first_name} {recipient.last_name}!</Text>
+          <Text style={styles.message}>You've been awarded the {awardType.name} award by {creator.first_name} {creator.last_name}.</Text>
+          <Text style={styles.date}>{granted}</Text>
         </View>
       </Page>
     </Document>
@@ -45,37 +51,37 @@ const createDoc = (props) => {
 }
 
 const Award = (props) => {
-  const award = props.award
+  const {
+    recipient,
+    creator,
+    awardType,
+    id,
+    granted,
+  } = props.award
+
   return (
     <div 
+      key={id}
       className='award-list__item'
-      id={award.awardType === 'Employee of the Month' ? 'EE_Month' : 'Sales'}  
+      id={awardType.name === 'Employee of the Month' ? 'EE_Month' : 'Sales'}  
     >
-      <p>{award.awardType} : {award.name} : {award.email} : {award.createdAt}</p>
-      {award.awardType && 
-        <button className="button"
-          onClick={(e) => {
-            props.handleDeleteAward(award.id);
-          }}
-        >
+      <p>{awardType.name} : {recipient.first_name} {recipient.lastName} : {recipient.email} : {granted}</p>
+      <button className="button"
+        onClick={(e) => props.handleDeleteAward(id)}
+      >
         Remove
-        </button>}
-      {award.awardType && 
-        <button 
-          className="button"
-          onClick={(e) => {
-            props.handleAwardToEdit(award.id);
-          }}
-        >
+      </button>
+      <button 
+        className="button"
+        onClick={(e) => props.handleAwardToEdit(id)}
+      >
         Edit
-        </button>}
-      {award.awardType && 
-        <div>
-          <PDFDownloadLink document={createDoc(props)} fileName="example.pdf">
-            {({ blob, url, loading, error }) => (loading ? 'Loading document...' : 'Download')}
-          </PDFDownloadLink>
-        </div>
-      }
+      </button>
+      <div>
+        <PDFDownloadLink document={createDoc(props)} fileName="example.pdf">
+          {({ blob, url, loading, error }) => (loading ? 'Loading document...' : 'Download')}
+        </PDFDownloadLink>
+      </div>
     </div>
   );
 }

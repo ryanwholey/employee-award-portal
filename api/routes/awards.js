@@ -22,14 +22,19 @@ router.post('/awards', (req, res) => {
         "granted": req.body.granted
     };
 
-    awardService.createAward(params)
-        .then(() => {
-            console.log("Yay! the award was created");
-            res.status(201).send('Award was created');
+    return awardService.createAward(params)
+        .then(([awardId]) => {
+            return res.status(201).json({
+                data: {
+                    id: awardId,
+                    ...params,
+                }
+            })
         })
-        .catch(() => {
+        .catch((err) => {
+            console.error(err)
             console.log('Error creating award');
-            res.status(501).send('Error creating award');
+            res.status(501).json({error: 'Error creating award'});
         })
 });
 

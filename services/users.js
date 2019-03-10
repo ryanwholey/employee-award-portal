@@ -125,6 +125,7 @@ async function getUserById(id) {
         'region',
     )
     .where({ id })
+    .whereNull('dtime')
     .first()
 
     if (!user) {

@@ -45,10 +45,10 @@ export const fetchAll = (url, options = {}) => {
             } else {
                 range = [ 2 ]
             }
-
-            let queryParams = new URL(url).search.replace('?','')
+            
+            let queryParams = new URL(`${window.location.origin}${url}`).search.replace('?','')
             if (queryParams !== '') {
-                '&' + queryParams
+                queryParams = '&' + queryParams
             }
 
             return Promise.all([

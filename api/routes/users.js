@@ -15,6 +15,7 @@ const {
     NotFoundError, 
 } = require('../../services/errors')
 const userService = require('../../services/users')
+const awardService = require('../../services/awards')
 
 const router = express.Router()
 
@@ -36,7 +37,7 @@ router.get('/users/:id', async (req, res) => {
 
     try {
         const user = await userService.getUserById(userId)
-
+        
         return res.status(OK).json({ data: user })
     } catch (err) {
 
@@ -137,5 +138,37 @@ router.delete('/users/:id', assertIsAdmin, async (req, res) => {
         res.status(INTERNAL_SERVER_ERROR).json({ error: 'Internal server error' })
     }
 })
+
+
+router.get('/users/:id/awards', async (req, res) => {
+    try {
+        await Joi.validate(req.params.id, [
+            Joi.string().regex(/me/).label('id'),
+            Joi.number().required().label('id')
+        ])
+    } catch (err) {
+        return res.status(BAD_REQUEST).send({ error: err.message })
+    }
+    let userId = req.params.id
+
+    if (userId === 'me' && _.get(req, 'user.id')) {
+        userId = req.user.id
+    }
+    const allowedFilters = ['sent', 'received']
+    const filters = _.get(req, 'query.filters', '').split(',').filter(f => allowedFilters.includes(f))
+
+    const pageSize = req.query.page_size
+    const page = req.query.page
+    const paginationOptions = _.pickBy({ pageSize, page }, _.identity)
+
+    try {
+        const awards = await awardService.selectAwardsByUser(userId, { filters }, paginationOptions)
+
+        return res.status(OK).json(awards)
+    } catch (err) {
+        console.error(err)
+        res.status(INTERNAL_SERVER_ERROR).json({ error: 'Internal server error' })
+    }
+})    
 
 module.exports = router

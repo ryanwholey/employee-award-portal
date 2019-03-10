@@ -1,6 +1,8 @@
 const knex = require('../db/knex');
 const _ = require('lodash');
 const moment = require('moment');
+const Joi = require('joi')
+const dateUtil = require('../utils/date')
 
 const { NotFoundError, DuplicateEntryError } = require('./errors')
 
@@ -96,27 +98,97 @@ async function selectAwardsToMail() {
  * @returns {Promise} Promise object
  */
 function createAward(params) {
-    console.log("I\'ll try adding an award...");
+    // console.log("I\'ll try adding an award...");
     //const mysqlTimestamp = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss');
     //params['ctime'] = mysqlTimestamp;
-    const data = [params];
-    knex('awards').insert(data).then(() => console.log("data inserted"))
-        .catch((err) => { console.log(err); throw err })
-    console.log('Past the INSERT statement');
-    return new Promise((resolve, reject) => {
-        val=1;
-        console.log('inside the promise, success = ' + val);
-        if(val) {
-            console.log('inside the conditional, success = ' + val);
-            resolve("AWARD")
-        } else {
-            reject("**no award**")
-        }
+    // const now = 
+    // console.log(params)
+    // const data = [params];
+    // const update = {
+    //     ...params,
+    //     ctime: now,
+    // }
+    return knex('awards')
+    .insert({
+        ...params,
+        ctime: dateUtil.formatMySQLDatetime(moment(new Date())),
     })
+    // .then(() => console.log("data inserted"))
+    //     .catch((err) => { console.log(err); throw err })
+    // console.log('Past the INSERT statement');
+    // return new Promise((resolve, reject) => {
+    //     val=1;
+    //     console.log('inside the promise, success = ' + val);
+    //     if(val) {
+    //         console.log('inside the conditional, success = ' + val);
+    //         resolve("AWARD")
+    //     } else {
+    //         reject("**no award**")
+    //     }
+    // })
 };
+
+async function selectAwardsByUser(userId, queryParams = {filter: []}, pageOptions = {}) {
+    const defaultPageOptions = {
+        pageSize: 10,
+        page: 1,
+    }
+    const options = {
+        ...defaultPageOptions,
+        ...pageOptions,
+    }
+
+    const pageSize = options.pageSize
+    const page = options.page < 1 ? 1: options.page
+    await Joi.validate(userId, Joi.number().required().label('userId'))
+
+    const query = knex('awards')
+    .whereNull('dtime')
+
+    const { filters } = queryParams
+
+    if ((filters.includes('sent') && filters.includes('received')) || _.isEmpty(filters)) {
+        query
+        .where({ creator: userId })
+        .orWhere({ recipient: userId })
+    } else if (filters.includes('sent')) {
+        query
+        .where({ creator: userId })
+    } else {
+        query
+        .where({ recipient: userId })
+    }
+    
+
+    let countQuery = query.clone()
+    countQuery.count('*')
+    const [ res ] = await countQuery
+
+    const count = res['count(*)']
+    const totalPages = Math.ceil(count / pageSize) || 1;
+
+    if (page > totalPages) {
+        throw new NotFoundError(`Page ${page} requested, total pages ${totalPages}`)
+    }
+    const offset = (pageSize * page) - pageSize;
+
+    query
+    .offset(offset)
+    .limit(pageSize)
+
+    return {
+        pagination: {
+            page,
+            page_size: pageSize,
+            total_pages: totalPages,
+        },
+        data: await query,
+    }
+}
 
 module.exports = {
     createAward,
     selectAwards,
+    selectAwardsByUser,
     selectAwardsToMail,
 }

@@ -1,12 +1,18 @@
 const express = require('express');
-const router = express.Router();
 const _ = require('lodash');
+const Joi = require('joi')
 const {
     DuplicateEntryError,
     NotFoundError,
 } = require('../../services/errors');
-
+const {
+    BAD_REQUEST,
+    CREATED,
+    INTERNAL_SERVER_ERROR,
+} = require('http-status-codes')
 const awardService = require('../../services/awards')
+
+const router = express.Router();
 
 /* json in the client request body should include:
     - "type": the award type
@@ -21,15 +27,15 @@ router.post('/awards', (req, res) => {
         "recipient": req.body.recipient,
         "granted": req.body.granted
     };
-
-    awardService.createAward(params)
-        .then(() => {
-            console.log("Yay! the award was created");
-            res.status(201).send('Award was created');
+    
+    return awardService.createAward(params)
+        .then((award) => {
+            return res.status(201).json({ data: award })
         })
-        .catch(() => {
+        .catch((err) => {
+            console.error(err)
             console.log('Error creating award');
-            res.status(501).send('Error creating award');
+            res.status(501).json({ error: 'Error creating award' });
         })
 });
 
@@ -53,6 +59,30 @@ router.get('/awards/', async (req, res) => {
         return res.status(500).json({error: err.message})
     }
 });
+
+router.delete('/awards/:id', async (req, res) => {
+    const deleteAwardSchema = Joi.object().keys({
+        id: Joi.number().required().label('id'),
+    })
+
+    try {
+        await Joi.validate(req.params, deleteAwardSchema)
+    } catch (err) {
+        return res.status(BAD_REQUEST).send(err.message)
+    }
+    const { id } = req.params
+
+    try {
+        await awardService.deleteAwardById(id)
+
+        return res.status(CREATED).json({
+            data: id,
+        })
+    } catch (err) {
+        console.error(err)
+        res.status(INTERNAL_SERVER_ERROR).json({ error: 'Internal server error' })
+    }
+})
 
 
 

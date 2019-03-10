@@ -1,61 +1,89 @@
 import React from 'react';
-import moment from 'moment';
-import uuid from 'uuid';
+import Datetime from 'react-datetime'
+import moment from 'moment'
 
 export default class NewAward extends React.Component {
+
   constructor(props) {
     super(props)
 
     this.state = {
       key: undefined,
-      awardType: 'Employee of the Month',
-      name: '',
-      email: '',
+      awardType: props.awardTypes[0].id,
+      recipientId: props.users[0].id,
       message: '',
-      createdAt: '',
-      error: undefined
+      error: undefined,
+      granted: new Date()
     }
-    this.baseState = this.state;
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.updateState = this.updateState.bind(this);
-  };
 
-
-  handleSubmit(e) {
-    e.preventDefault();
-    const now = moment().format('MMM Do YYYY h:mm a');
-    const newAward = {
-      id: uuid(),
-      name: this.state.name,
-      awardType: this.state.awardType,
-      email: this.state.email,
-      message: this.state.message,
-      createdAt: now
-    };
-
-    this.props.handleAddAward(newAward);
-    this.setState(this.baseState);
+    this.baseState = {
+      awardType: props.awardTypes[0].id,
+      recipientId: props.users[0].id,
+      granted: new Date(),
+    }
   }
 
-  updateState(e) {
+  handleSubmit = (e) => {
+    e.preventDefault();
+    const {
+      creator,
+    } = this.props
+
+    const {
+      recipientId,
+      awardType,
+      message,
+      granted,
+    } = this.state
+    
+    const newAward = {
+      creatorId: creator.id,
+      recipientId: +recipientId,
+      awardType: +awardType,
+      message: message,
+      granted,
+    }
+    
+    this.props.handleAddAward(newAward)
+    this.setState(this.baseState)
+  }
+
+  updateState = (e) => {
     this.setState({ [e.target.name]: e.target.value });
   }
 
+  handleDateChange = (momentDate) => {
+    this.setState({granted: momentDate.toDate()})
+  }
 
   render() {
+    const {
+      awardTypes,
+      users,
+    } = this.props
+    const {
+      awardType,
+      message,
+      error,
+      recipientId,
+      granted,
+    } = this.state
+    
     return (
       <div>
         <div className='new-award'>
           <h2 className='new-award__subtitle'>Create New Award</h2>
-          {this.state.error && <p>{this.state.error}</p>}
-          <form onSubmit={this.handleSubmit}>
-            <select name='awardType' value={this.state.awardType} onChange={this.updateState} > 
-              <option value={this.props.awardOptions[0]}>Employee of the Month</option>
-              <option value={this.props.awardOptions[1]}>Monthly Sales Winner</option>
-            </select>       
-            <input type='text' required={true} name='name' placeholder='Name' value={this.state.name} onChange={this.updateState} />
-            <input type='email' required={true} name='email' placeholder='Email' value={this.state.email} onChange={this.updateState} />
-            <input type='text' name='message' placeholder='Message' value={this.state.message} onChange={this.updateState}/>
+          {error && <p>{error}</p>}
+          <form onSubmit={ this.handleSubmit }>
+            <select name='awardType' value={awardType} onChange={ this.updateState } > 
+              {awardTypes.map(type => <option key={type.id} value={type.id}>{type.name}</option> )}
+            </select>
+            <select name='recipientId' value={recipientId} onChange={this.updateState} > 
+              {users.map(user => <option key={user.id} value={user.id}>{user.email} - {user.first_name} {user.last_name}</option> )}
+            </select>
+            <Datetime defaultValue={granted} onChange={this.handleDateChange}/>
+            <input type='text' name='message' placeholder='Message' value={message} onChange={this.updateState}/>
+
             <button className='button'>
               Submit
             </button>

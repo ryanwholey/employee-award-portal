@@ -55,12 +55,12 @@ export default class EditModal extends React.Component {
         <div className="modal-body">
           <form>
             <select name='awardType' value={this.state.awardType} onChange={this.updateState} > 
-              <option value={this.props.awardOptions[0]}>Employee of the Month</option>
-              <option value={this.props.awardOptions[1]}>Monthly Sales Winner</option>
+              <option value={this.props.awardTypes[0]}>Employee of the Month</option>
+              <option value={this.props.awardTypes[1]}>Monthly Sales Winner</option>
             </select>       
-            <input type='text' name='name' value={this.state.name} placeHolder="Name" onChange={this.updateState} />
-            <input type='email' name='email' value={this.state.email} placeHolder="Email" onChange={this.updateState} />
-            <input type='text' name='message' value={this.state.message} placeHolder="Message" onChange={this.updateState}/>
+            <input type='text' name='name' value={this.state.name} placeholder="Name" onChange={this.updateState} />
+            <input type='email' name='email' value={this.state.email} placeholder="Email" onChange={this.updateState} />
+            <input type='text' name='message' value={this.state.message} placeholder="Message" onChange={this.updateState}/>
           </form>
           <button
             className="button"

@@ -10,11 +10,8 @@ export default class NewAward extends React.Component {
     this.state = {
       key: undefined,
       awardType: props.awardTypes[0].id,
-      name: '',
-      email: '',
-      message: '',
-      createdAt: '',
       recipientId: props.users[0].id,
+      message: '',
       error: undefined,
       granted: new Date()
     }

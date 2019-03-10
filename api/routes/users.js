@@ -83,7 +83,6 @@ router.post('/users', async (req, res) => {
     } catch (err) {
 
         if (err.isJoi) {
-            console.log(err)
             return res.status(BAD_REQUEST).json({ error: err.details })
         } else if (err instanceof DuplicateEntryError) {
             return res.status(CONFLICT).json({ error: 'User already exists' })

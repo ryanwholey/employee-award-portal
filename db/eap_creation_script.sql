@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS `eap`.`emails` (
   `sent` DATETIME NULL,
   `award` INT NOT NULL,
   `recipient` INT NOT NULL,
-  `ctime` DATETIME NOT NULL,
+  `ctime` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `mtime` DATETIME NULL,
   `dtime` DATETIME NULL,
   `state` TINYINT NULL,

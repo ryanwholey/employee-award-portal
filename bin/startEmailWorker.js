@@ -14,27 +14,27 @@ function scheduleAwards() {
             const awards = await awardService.selectAwardsToMail();
             if (awards.data.length > 0) {
                 console.log('FOUND AWARDS TO SCHEDULE');
-                let params;
-                for(var record=0; record<awards.data.length; record++) {
-                    var thisRecord = awards.data[record];
-                    console.log('ID: ' + thisRecord.id + ', TYPE: ' + thisRecord.type);
 
-                    params = {
-                        "scheduled_time": thisRecord.granted,
-                        "award": thisRecord.id,
-                        "recipient": thisRecord.recipient
-                    };
-                    try {
-                        const mailer = await mailService.scheduleMail();
-                    } catch (err) {
-                        if (err instanceof NotFoundError) {
-                            //return res.status(400).json({error: err.message})
-                            console.log(JSON.stringify({error: err.message}));
-                        }
-                        //return res.status(500).json({error: err.message})
+                let params = awards.data;
+                for(var record=0; record<params.length; record++){
+                    params[record].scheduled_time = params[record].granted;
+                    params[record].award = params[record].id;
+                    delete params[record].granted;
+                    delete params[record].id;
+                    delete params[record].type;
+                    delete params[record].creator;
+                }
+                console.log("REFACTORED ARRAY: " + JSON.stringify(params));
+
+                try {
+                    //const mailer = await mailService.scheduleMail(awards);
+                    const mailer = await mailService.scheduleMail(params);
+                    console.log('MAILER = ' + mailer);
+                } catch (err) {
+                    if (err instanceof NotFoundError) {
                         console.log(JSON.stringify({error: err.message}));
                     }
-
+                    console.log(JSON.stringify({error: err.message}));
                 }
             }
 
@@ -43,10 +43,8 @@ function scheduleAwards() {
             //res.status(200).json(awards)
         } catch (err) {
             if (err instanceof NotFoundError) {
-                //return res.status(400).json({error: err.message})
                 console.log(JSON.stringify({error: err.message}));
             }
-            //return res.status(500).json({error: err.message})
             console.log(JSON.stringify({error: err.message}));
         }
     })

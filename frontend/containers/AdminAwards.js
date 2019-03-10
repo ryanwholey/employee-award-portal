@@ -18,97 +18,94 @@ const defaultPageOptions = {
 
 // TODO: remove when awards endpoint is finalized
 const fetchAwards = (url) => {
-    return fetchGet(url)
-    .catch((err) => {
-        return {
-            pagination: {
-                page: 1,
-                page_size: 10,
-                total_pages: 1,
+    return Promise.resolve({
+        pagination: {
+            page: 1,
+            page_size: 10,
+            total_pages: 1,
+        },
+        body: [
+            {
+                id: 1,
+                type: 1,
+                creator: 1,
+                recipient: 2,
+                granted: '2019-02-23T08:16:50.000Z',
+                ctime: '2019-01-23T08:16:50.000Z',
             },
-            body: [
-                {
-                    id: 1,
-                    type: 1,
-                    creator: 1,
-                    recipient: 2,
-                    granted: '2019-02-23T08:16:50.000Z',
-                    ctime: '2019-01-23T08:16:50.000Z',
-                },
-                {
-                    id: 2,
-                    type: 3,
-                    creator: 2,
-                    recipient: 8,
-                    granted: '2019-02-23T08:16:50.000Z',
-                    ctime: '2019-02-23T08:16:50.000Z',
-                },
-                {
-                    id: 3,
-                    type: 1,
-                    creator: 1,
-                    recipient: 2,
-                    granted: '2019-02-27T08:16:50.000Z',
-                    ctime: '2019-02-25T08:16:50.000Z',
-                },
-                {
-                    id: 4,
-                    type: 1,
-                    creator: 1,
-                    recipient: 2,
-                    granted: '2019-02-27T08:16:50.000Z',
-                    ctime: '2019-02-27T08:16:50.000Z',
-                },
-                {
-                    id: 5,
-                    type: 1,
-                    creator: 1,
-                    recipient: 2,
-                    granted: '2019-02-28T08:16:50.000Z',
-                    ctime: '2019-02-29T08:16:50.000Z',
-                },
-                {
-                    id: 6,
-                    type: 1,
-                    creator: 1,
-                    recipient: 2,
-                    granted: '2019-03-01T08:16:50.000Z',
-                    ctime: '2019-02-29T08:16:50.000Z',
-                },
-                {
-                    id: 7,
-                    type: 1,
-                    creator: 1,
-                    recipient: 2,
-                    granted: '2019-03-03T08:16:50.000Z',
-                    ctime: '2019-02-29T08:16:50.000Z',
-                },
-                {
-                    id: 8,
-                    type: 1,
-                    creator: 1,
-                    recipient: 2,
-                    granted: '2019-03-03T08:16:50.000Z',
-                    ctime: '2019-02-29T08:16:50.000Z',
-                },
-                {
-                    id: 9,
-                    type: 1,
-                    creator: 1,
-                    recipient: 2,
-                    granted: '2019-03-03T08:16:50.000Z',
-                    ctime: '2019-02-29T08:16:50.000Z',
-                },
-                {
-                    id: 10,
-                    type: 1,
-                    creator: 1,
-                    recipient: 2,
-                    granted: '2019-03-15T08:16:50.000Z',
-                    ctime: '2019-02-29T08:16:50.000Z',
-                },
-            ]
-        }
+            {
+                id: 2,
+                type: 3,
+                creator: 2,
+                recipient: 8,
+                granted: '2019-02-23T08:16:50.000Z',
+                ctime: '2019-02-23T08:16:50.000Z',
+            },
+            {
+                id: 3,
+                type: 1,
+                creator: 1,
+                recipient: 2,
+                granted: '2019-02-27T08:16:50.000Z',
+                ctime: '2019-02-25T08:16:50.000Z',
+            },
+            {
+                id: 4,
+                type: 1,
+                creator: 1,
+                recipient: 2,
+                granted: '2019-02-27T08:16:50.000Z',
+                ctime: '2019-02-27T08:16:50.000Z',
+            },
+            {
+                id: 5,
+                type: 1,
+                creator: 1,
+                recipient: 2,
+                granted: '2019-02-28T08:16:50.000Z',
+                ctime: '2019-02-29T08:16:50.000Z',
+            },
+            {
+                id: 6,
+                type: 1,
+                creator: 1,
+                recipient: 2,
+                granted: '2019-03-01T08:16:50.000Z',
+                ctime: '2019-02-29T08:16:50.000Z',
+            },
+            {
+                id: 7,
+                type: 1,
+                creator: 1,
+                recipient: 2,
+                granted: '2019-03-03T08:16:50.000Z',
+                ctime: '2019-02-29T08:16:50.000Z',
+            },
+            {
+                id: 8,
+                type: 1,
+                creator: 1,
+                recipient: 2,
+                granted: '2019-03-03T08:16:50.000Z',
+                ctime: '2019-02-29T08:16:50.000Z',
+            },
+            {
+                id: 9,
+                type: 1,
+                creator: 1,
+                recipient: 2,
+                granted: '2019-03-03T08:16:50.000Z',
+                ctime: '2019-02-29T08:16:50.000Z',
+            },
+            {
+                id: 10,
+                type: 1,
+                creator: 1,
+                recipient: 2,
+                granted: '2019-03-15T08:16:50.000Z',
+                ctime: '2019-02-29T08:16:50.000Z',
+            },
+        ]
     })
 }
 

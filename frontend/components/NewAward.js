@@ -1,5 +1,6 @@
 import React from 'react';
-import uuid from 'uuid';
+import Datetime from 'react-datetime'
+import moment from 'moment'
 
 export default class NewAward extends React.Component {
 
@@ -14,10 +15,15 @@ export default class NewAward extends React.Component {
       message: '',
       createdAt: '',
       recipientId: props.users[0].id,
-      error: undefined
+      error: undefined,
+      granted: new Date()
     }
 
-    this.baseState = this.state;
+    this.baseState = {
+      awardType: props.awardTypes[0].id,
+      recipientId: props.users[0].id,
+      granted: new Date(),
+    }
   }
 
   handleSubmit = (e) => {
@@ -30,21 +36,27 @@ export default class NewAward extends React.Component {
       recipientId,
       awardType,
       message,
+      granted,
     } = this.state
     
     const newAward = {
       creatorId: creator.id,
-      recipientId,
-      awardType,
+      recipientId: +recipientId,
+      awardType: +awardType,
       message: message,
+      granted,
     }
-
+    
     this.props.handleAddAward(newAward)
     this.setState(this.baseState)
   }
 
   updateState = (e) => {
     this.setState({ [e.target.name]: e.target.value });
+  }
+
+  handleDateChange = (momentDate) => {
+    this.setState({granted: momentDate.toDate()})
   }
 
   render() {
@@ -56,9 +68,8 @@ export default class NewAward extends React.Component {
       awardType,
       message,
       error,
-      name,
-      email,
-      recipientId
+      recipientId,
+      granted,
     } = this.state
     
     return (
@@ -73,7 +84,9 @@ export default class NewAward extends React.Component {
             <select name='recipientId' value={recipientId} onChange={this.updateState} > 
               {users.map(user => <option key={user.id} value={user.id}>{user.email} - {user.first_name} {user.last_name}</option> )}
             </select>
+            <Datetime defaultValue={granted} onChange={this.handleDateChange}/>
             <input type='text' name='message' placeholder='Message' value={message} onChange={this.updateState}/>
+
             <button className='button'>
               Submit
             </button>

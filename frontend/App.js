@@ -13,6 +13,7 @@ import CreateAward from './components/CreateAward'
 import './app.css'
 import 'react-table/react-table.css'
 import 'react-toastify/dist/ReactToastify.css'
+import 'react-datetime/css/react-datetime.css'
 import './styles/styles.scss'
 
 class LoggedInHeader extends React.Component{

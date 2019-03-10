@@ -1,4 +1,5 @@
 import React from 'react';
+import moment from 'moment';
 import { PDFDownloadLink, Page, Text, View, Document, StyleSheet, Font} from '@react-pdf/renderer';
 
 const styles = StyleSheet.create({
@@ -42,7 +43,7 @@ const createDoc = (props) => {
         <View style={styles.container}>
           <Text style={styles.header}>Congratulations, {recipient.first_name} {recipient.last_name}!</Text>
           <Text style={styles.message}>You've been awarded the {awardType.name} award by {creator.first_name} {creator.last_name}.</Text>
-          <Text style={styles.date}>{granted}</Text>
+          <Text style={styles.date}>{moment(granted).format('lll')}</Text>
         </View>
       </Page>
     </Document>
@@ -59,23 +60,21 @@ const Award = (props) => {
     granted,
   } = props.award
 
+  if (!recipient) {
+    return null
+  }
+  
   return (
     <div 
       key={id}
       className='award-list__item'
       id={awardType.name === 'Employee of the Month' ? 'EE_Month' : 'Sales'}  
     >
-      <p>{awardType.name} : {recipient.first_name} {recipient.lastName} : {recipient.email} : {granted}</p>
+      <p>{awardType.name} : {recipient.first_name} {recipient.last_name} : {recipient.email} : {granted}</p>
       <button className="button"
         onClick={(e) => props.handleDeleteAward(id)}
       >
         Remove
-      </button>
-      <button 
-        className="button"
-        onClick={(e) => props.handleAwardToEdit(id)}
-      >
-        Edit
       </button>
       <div>
         <PDFDownloadLink document={createDoc(props)} fileName="example.pdf">

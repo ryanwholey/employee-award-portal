@@ -108,11 +108,20 @@ function createAward(params) {
     //     ...params,
     //     ctime: now,
     // }
+    const now = dateUtil.formatMySQLDatetime(moment(new Date()))
+    console.log(params.granted)
     return knex('awards')
     .insert({
         ...params,
-        ctime: dateUtil.formatMySQLDatetime(moment(new Date())),
+        granted: params.granted || now,
+        ctime: now,
     })
+    .then(([ id ]) => ({
+        ...params,
+        id,
+        granted: params.granted || now,
+        ctime: now,
+    }))
     // .then(() => console.log("data inserted"))
     //     .catch((err) => { console.log(err); throw err })
     // console.log('Past the INSERT statement');
@@ -186,8 +195,18 @@ async function selectAwardsByUser(userId, queryParams = {filter: []}, pageOption
     }
 }
 
+async function deleteAwardById(awardId) {
+    return await knex('awards')
+    .where({ id: awardId })
+    .whereNull('dtime')
+    .update({
+        'dtime': dateUtil.formatMySQLDatetime(moment(new Date()))
+    })
+}
+
 module.exports = {
     createAward,
+    deleteAwardById,
     selectAwards,
     selectAwardsByUser,
     selectAwardsToMail,

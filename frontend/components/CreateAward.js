@@ -1,13 +1,14 @@
 import React from 'react';
 import uuid from 'uuid';
 import isEmpty from 'lodash/isEmpty'
-import { fetchAll, fetchGet, fetchPost } from '../utils/http'
+import moment from 'moment'
 
 import NewAward from './NewAward';
 import Header from './Header';
 import AwardList from './AwardList';
 import EditModal from './EditModal';
 import { ToastContainer, toast } from 'react-toastify'
+import { fetchAll, fetchGet, fetchDelete, fetchPost } from '../utils/http'
 
 
 export default class CreateAward extends React.Component {
@@ -15,8 +16,6 @@ export default class CreateAward extends React.Component {
   state = {
     awards: null,
     awardTypes: null,
-    awardToEdit: undefined,
-    showModal: false,
     isFetching: true,
     user: null,
   }
@@ -64,60 +63,37 @@ export default class CreateAward extends React.Component {
       type: award.awardType,
       recipient: award.recipientId,
       creator: award.creatorId,
+      granted: moment(award.granted).format('YYYY-MM-DD HH:mm:ss'),
     }
     
     fetchPost('/api/awards', newAward)
     .then((res) => {
       this.setState((prevState) => ({ 
-        awards: [...prevState.awards, newAward]
+        awards: [...prevState.awards, res.data]
       }))
     })
+    .then(() => {
+      this.showToast('Successfully created award', { type: 'success' })
+    })
     .catch((err) => {
-        this.showToast(err.message, { type: 'error' })
+      this.showToast(err.message, { type: 'error' })
     })
   }
 
   handleDeleteAward = (awardToRemove) => {
-    this.setState((prevState) => ({
-      awards: prevState.awards.filter((award) => awardToRemove !== award.id)
-    }));
+    fetchDelete(`/api/awards/${awardToRemove}`)
+    .then(() => {
+      this.setState((prevState) => ({
+        awards: prevState.awards.filter((award) => awardToRemove !== award.id)
+      }))
+    })
+    .then(() => {
+      this.showToast('Successfully deleted award', { type: 'success' })
+    })
+    .catch((err) => {
+        this.showToast(err.message, { type: 'error' })
+    })
   };
-
-  handleEditAward = (awardState) => {
-    let awardIdx = this.state.awards.findIndex((award) => award.id === this.state.awardToEdit);
-    let newAwardsArr = [...this.state.awards];
-    newAwardsArr[awardIdx] = awardState
-    this.setState(() => ({ awards: newAwardsArr, awardToEdit: undefined, showModal: false }));
-  };
-
-  handleCancelEdit = () => {
-    this.setState(() => ({ awardToEdit: undefined, showModal: !this.state.showModal}))
-  } 
-
-  handleAwardToEdit = (id) => {
-    this.setState(() => ({ awardToEdit: id, showModal: !this.state.showModal }));
-  }
-
-  renderModal = () => {
-    const { 
-      awards,
-      awardTypes,
-      awardToEdit,
-      showModal,
-    } = this.state
-
-    const award = awards.filter((award) => ( award.id === awardToEdit ))
-
-    return (
-      <EditModal 
-        showModal={showModal}
-        award={award}
-        awardTypes={awardTypes}
-        handleEditAward={this.handleEditAward}
-        handleCancelEdit={this.handleCancelEdit}
-      />
-    )
-  }
 
   renderAwardList = () => {
     const {
@@ -128,7 +104,7 @@ export default class CreateAward extends React.Component {
 
     const formattedAwards = awards.map((award) => ({
       id: award.id,
-      granted: award.granted,
+      granted: moment(award.granted).format('lll'),
       recipient: users.find((user) => user.id === award.recipient),
       creator: users.find((user) => user.id === award.creator),
       awardType: awardTypes.find((type) => type.id === award.type),
@@ -137,8 +113,7 @@ export default class CreateAward extends React.Component {
     return (
       <AwardList 
         awards={formattedAwards} 
-        handleDeleteAward={this.handleDeleteAward} 
-        handleAwardToEdit={this.handleAwardToEdit}
+        handleDeleteAward={this.handleDeleteAward}
       />
     )
   }
@@ -148,7 +123,6 @@ export default class CreateAward extends React.Component {
       user,
       users,
       awardTypes,
-      showModal,
       isFetching,
     } = this.state
 
@@ -167,7 +141,6 @@ export default class CreateAward extends React.Component {
             handleAddAward={this.handleAddAward}
           />
           {this.renderAwardList()}
-          {this.renderModal()}
           <ToastContainer />
         </div>
       </div>

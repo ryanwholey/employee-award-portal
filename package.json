@@ -37,6 +37,7 @@
     "nodemailer": "^5.1.1",
     "pm2": "^3.2.9",
     "react": "^16.7.0",
+    "react-datetime": "^2.16.3",
     "react-dom": "^16.7.0",
     "react-modal": "^3.8.1",
     "react-pdf": "^4.0.5",

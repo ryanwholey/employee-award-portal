@@ -2,4 +2,7 @@ node_modules
 .DS_Store
 *.log
 .env
+.env-cloud
+.env.bak
+package-lock.json
 frontend/static

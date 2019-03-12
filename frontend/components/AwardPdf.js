@@ -41,7 +41,7 @@ const createDoc = (props) => {
         <Page style={styles.page} orientation='landscape' size='A4'>
           <View style={styles.container}>
             <Text style={styles.header}>Congratulations, {recipientName}!</Text>
-            <Text style={styles.message}>You've been awarded the {awardTypeName} award by {creatorName}.</Text>
+            <Text style={styles.message}>You have been awarded the {awardTypeName} award by {creatorName}.</Text>
             <Text style={styles.date}>{moment(granted).format('lll')}</Text>
           </View>
         </Page>

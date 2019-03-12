@@ -97,8 +97,8 @@ export default class CreateAward extends React.Component {
   renderAwardList = () => {
     const {
       users,
-      awards, 
-      awardTypes, 
+      awards,
+      awardTypes,
     } = this.state
 
     const formattedAwards = awards.map((award) => ({
@@ -114,6 +114,30 @@ export default class CreateAward extends React.Component {
         awards={formattedAwards} 
         handleDeleteAward={this.handleDeleteAward}
       />
+    )
+  }
+
+  renderBody() {
+    const {
+      awardTypes,
+      users,
+      user
+    } = this.state
+
+    if (awardTypes.length === 0) {
+      return <span>No award types found. Please create some award types</span>
+    }
+
+    return (
+      <React.Fragment>
+        <NewAward
+          users={users}
+          creator={user}
+          awardTypes={awardTypes}
+          handleAddAward={this.handleAddAward}
+        />
+        {this.renderAwardList()}
+      </React.Fragment>
     )
   }
 
@@ -133,13 +157,7 @@ export default class CreateAward extends React.Component {
       <div>
         <Header subtitle={`Welcome back, ${user.firstName} ${user.lastName}!`} />
         <div className='container'>
-          <NewAward
-            users={users}
-            creator={user}
-            awardTypes={awardTypes}
-            handleAddAward={this.handleAddAward}
-          />
-          {this.renderAwardList()}
+          {this.renderBody()}
           <ToastContainer />
         </div>
       </div>

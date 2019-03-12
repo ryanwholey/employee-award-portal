@@ -126,26 +126,28 @@ router.patch('/award_types/:id', async (req, res) => {
     }
 })
 
-router.delete('/award_types/:id', async (req, res) => {
-    const deleteAwardTypeSchema = Joi.object().keys({
-        id: Joi.number().required().label('id'),
-    })
+// This route turns out to be quite dangerous, disabling for now
 
-    try {
-        await Joi.validate(req.params, deleteAwardTypeSchema)
-    } catch (err) {
-        return res.status(BAD_REQUEST).send(err.message)
-    }
-    const { id } = req.params
+// router.delete('/award_types/:id', async (req, res) => {
+//     const deleteAwardTypeSchema = Joi.object().keys({
+//         id: Joi.number().required().label('id'),
+//     })
 
-    try {
-        await awardTypeService.deleteAwardTypeById(id)
+//     try {
+//         await Joi.validate(req.params, deleteAwardTypeSchema)
+//     } catch (err) {
+//         return res.status(BAD_REQUEST).send(err.message)
+//     }
+//     const { id } = req.params
 
-        return res.status(CREATED).send()
-    } catch (err) {
-        console.error(err)
-        res.status(INTERNAL_SERVER_ERROR).json({ error: 'Internal server error' })
-    }
-})
+//     try {
+//         await awardTypeService.deleteAwardTypeById(id)
+
+//         return res.status(CREATED).send()
+//     } catch (err) {
+//         console.error(err)
+//         res.status(INTERNAL_SERVER_ERROR).json({ error: 'Internal server error' })
+//     }
+// })
 
 module.exports = router

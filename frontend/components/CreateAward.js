@@ -1,5 +1,4 @@
 import React from 'react';
-import uuid from 'uuid';
 import isEmpty from 'lodash/isEmpty'
 import moment from 'moment'
 

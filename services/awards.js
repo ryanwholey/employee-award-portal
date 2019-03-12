@@ -3,6 +3,8 @@ const _ = require('lodash');
 const moment = require('moment');
 const Joi = require('joi')
 const dateUtil = require('../utils/date')
+const childProcess = require('child_process')
+const path = require('path')
 
 const { NotFoundError, DuplicateEntryError } = require('./errors')
 
@@ -97,20 +99,10 @@ async function selectAwardsToMail() {
  * @param {string} params.granted   - date award is to be granted
  * @returns {Promise} Promise object
  */
-function createAward(params) {
-    // console.log("I\'ll try adding an award...");
-    //const mysqlTimestamp = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss');
-    //params['ctime'] = mysqlTimestamp;
-    // const now = 
-    // console.log(params)
-    // const data = [params];
-    // const update = {
-    //     ...params,
-    //     ctime: now,
-    // }
+async function createAward(params) {
     const now = dateUtil.formatMySQLDatetime(moment(new Date()))
-    console.log(params.granted)
-    return knex('awards')
+
+    const award = await knex('awards')
     .insert({
         ...params,
         granted: params.granted || now,
@@ -122,20 +114,39 @@ function createAward(params) {
         granted: params.granted || now,
         ctime: now,
     }))
-    // .then(() => console.log("data inserted"))
-    //     .catch((err) => { console.log(err); throw err })
-    // console.log('Past the INSERT statement');
-    // return new Promise((resolve, reject) => {
-    //     val=1;
-    //     console.log('inside the promise, success = ' + val);
-    //     if(val) {
-    //         console.log('inside the conditional, success = ' + val);
-    //         resolve("AWARD")
-    //     } else {
-    //         reject("**no award**")
-    //     }
-    // })
-};
+    
+    const users = await knex('users')
+        .whereIn('id', [award.recipient, award.creator])
+
+    const [awardType] = await knex('award_types')
+        .where({id: award.type})
+
+    const recipient = users.find(user => user.id === award.recipient)
+    const creator = users.find(user => user.id === award.creator)
+
+    const cmd = [
+        `${path.resolve(__dirname, '../node_modules/.bin/babel-node')}`,
+        `${path.resolve(__dirname, '../bin/createPdf.js')}`,
+        `--filename="${award.id}"`,
+        `--award-type-name="${awardType.name}"`,
+        `--granted="${award.granted}"`,
+        `--recipient-name="${recipient.first_name} ${recipient.last_name}"`,
+        `--creator-name="${creator.first_name} ${creator.last_name}"`,
+        `--signature-url="http://fakeurl.com"`
+    ]
+    
+    if (process.env.NODE_ENV !== 'test') {
+        childProcess.exec(cmd.join(' '), (error, stdout, stderr) => {
+            if (error) {
+                console.error(`Error creating pdf: ${error}`);
+                return
+            }
+            console.log(stdout)
+        })
+    }
+
+    return award
+}
 
 async function selectAwardsByUser(userId, queryParams = {filter: []}, pageOptions = {}) {
     const defaultPageOptions = {
@@ -167,7 +178,6 @@ async function selectAwardsByUser(userId, queryParams = {filter: []}, pageOption
         query
         .where({ recipient: userId })
     }
-    
 
     let countQuery = query.clone()
     countQuery.count('*')

@@ -134,9 +134,8 @@ async function createAward(params) {
         `--creator-name="${creator.first_name} ${creator.last_name}"`,
         `--signature-url="http://fakeurl.com"`
     ]
-    console.log('going in', process.env.NODE_ENV)
+    
     if (process.env.NODE_ENV !== 'test') {
-        console.log('executing')
         childProcess.exec(cmd.join(' '), (error, stdout, stderr) => {
             if (error) {
                 console.error(`Error creating pdf: ${error}`);

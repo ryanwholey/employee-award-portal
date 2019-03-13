@@ -16,101 +16,8 @@ const defaultPageOptions = {
     pageSize: 10,
 }
 
-// TODO: remove when awards endpoint is finalized
-const fetchAwards = (url) => {
-    return Promise.resolve({
-        pagination: {
-            page: 1,
-            page_size: 10,
-            total_pages: 1,
-        },
-        body: [
-            {
-                id: 1,
-                type: 1,
-                creator: 1,
-                recipient: 2,
-                granted: '2019-02-23T08:16:50.000Z',
-                ctime: '2019-01-23T08:16:50.000Z',
-            },
-            {
-                id: 2,
-                type: 3,
-                creator: 2,
-                recipient: 8,
-                granted: '2019-02-23T08:16:50.000Z',
-                ctime: '2019-02-23T08:16:50.000Z',
-            },
-            {
-                id: 3,
-                type: 1,
-                creator: 1,
-                recipient: 2,
-                granted: '2019-02-27T08:16:50.000Z',
-                ctime: '2019-02-25T08:16:50.000Z',
-            },
-            {
-                id: 4,
-                type: 1,
-                creator: 1,
-                recipient: 2,
-                granted: '2019-02-27T08:16:50.000Z',
-                ctime: '2019-02-27T08:16:50.000Z',
-            },
-            {
-                id: 5,
-                type: 1,
-                creator: 1,
-                recipient: 2,
-                granted: '2019-02-28T08:16:50.000Z',
-                ctime: '2019-02-29T08:16:50.000Z',
-            },
-            {
-                id: 6,
-                type: 1,
-                creator: 1,
-                recipient: 2,
-                granted: '2019-03-01T08:16:50.000Z',
-                ctime: '2019-02-29T08:16:50.000Z',
-            },
-            {
-                id: 7,
-                type: 1,
-                creator: 1,
-                recipient: 2,
-                granted: '2019-03-03T08:16:50.000Z',
-                ctime: '2019-02-29T08:16:50.000Z',
-            },
-            {
-                id: 8,
-                type: 1,
-                creator: 1,
-                recipient: 2,
-                granted: '2019-03-03T08:16:50.000Z',
-                ctime: '2019-02-29T08:16:50.000Z',
-            },
-            {
-                id: 9,
-                type: 1,
-                creator: 1,
-                recipient: 2,
-                granted: '2019-03-03T08:16:50.000Z',
-                ctime: '2019-02-29T08:16:50.000Z',
-            },
-            {
-                id: 10,
-                type: 1,
-                creator: 1,
-                recipient: 2,
-                granted: '2019-03-15T08:16:50.000Z',
-                ctime: '2019-02-29T08:16:50.000Z',
-            },
-        ]
-    })
-}
-
 const formatAwards = (awards, awardTypes, users) => {
-    return awards.body.map(({id, type, creator, recipient, granted, ctime}) => ({
+    return awards.data.map(({id, type, creator, recipient, granted, ctime}) => ({
         id,
         awardTypeId: type,
         awardTypeName: get(awardTypes.find(({ id }) => id === type), 'name', '[deleted]'),
@@ -143,13 +50,13 @@ export default class AdminAwards extends React.Component {
         let awardTypes
         Promise.all([
             fetchAll('/api/award_types'),
-            fetchAwards(`/api/awards?page=${pageOptions.page}&page_size=${pageOptions.pageSize}`),
+            fetchGet(`/api/awards?page=${pageOptions.page}&page_size=${pageOptions.pageSize}`),
         ])
         .then(([ _awardTypes, _awards ]) => {
             awardTypes = _awardTypes
             awards = _awards
 
-            const ids = uniq(flatMap(awards.body, ({ creator, recipient }) => ([ creator, recipient ])))
+            const ids = uniq(flatMap(awards.data, ({ creator, recipient }) => ([ creator, recipient ])))
 
             if (isEmpty(ids)) {
                 return Promise.resolve([])
@@ -169,7 +76,6 @@ export default class AdminAwards extends React.Component {
         .catch((err) => {
             this.showToast(err.message, {type: 'error'})
         })
-
     }
 
     showToast = (message, props) => {

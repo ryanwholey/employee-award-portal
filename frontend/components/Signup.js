@@ -1,7 +1,7 @@
 import React from 'react';
 import Cookies from 'universal-cookie'
 import Header from './Header';
-import { fetchPost } from '../utils/http'
+import { fetchAll, fetchPost } from '../utils/http'
 import { Link } from 'react-router-dom'
 import { ToastContainer, toast } from 'react-toastify'
 
@@ -15,13 +15,35 @@ export default class Signup extends React.Component {
     firstName: '',
     lastName: '',
     errors: [],
+    isFetching: true,
+    regions: null,
+    regionId: null,
   }
     
   cookies = new Cookies()
 
+  componentDidMount() {
+    this.fetchData()
+  }
+
   _updateState = (e) => {
     this.setState({ 
       [e.target.name]: e.target.value
+    })
+  }
+
+  fetchData = () => {
+    this.setState({
+      isFetching: true,
+    }, () => {
+      fetchAll('/api/regions')
+      .then((regions) => {
+        this.setState({
+          regions,
+          isFetching: false,
+          regionId: regions[0] ? regions[0].id : '',
+        })
+      })
     })
   }
 
@@ -34,18 +56,33 @@ export default class Signup extends React.Component {
       confirmPassword,
       firstName,
       lastName,
+      regionId,
     } = this.state
 
     if (password !== confirmPassword) {
-      console.error('Passwords do not match')
+      this.showToast('Passwords do not match', {type: 'error'})
       return
     }
 
+    let region
+    if (regionId === '' || regionId === 0) {
+      region = null
+    } else {
+      region = +regionId 
+    }
+    console.log({
+      email,
+      password,
+      first_name: firstName,
+      last_name: lastName,
+      region,
+    })
     fetchPost('/api/users', {
       email,
       password,
       first_name: firstName,
       last_name: lastName,
+      region,
     })
     .then(() => {
       return fetchPost('/api/login_tokens', {
@@ -73,9 +110,16 @@ export default class Signup extends React.Component {
       email,
       password,
       confirmPassword,
+      isFetching,
       firstName,
       lastName,
+      regions,
+      regionId,
     } = this.state
+
+    if (isFetching) {
+      return <span>Loading...</span>
+    }
 
     return (
       <div className="container-center">
@@ -124,6 +168,9 @@ export default class Signup extends React.Component {
             onChange={ this._updateState }
             autoComplete="off" 
           />
+          <select name='regionId' value={regionId} onChange={this._updateState} > 
+            {regions.map(region => <option key={region.id} value={region.id}>{region.description}</option> )}
+          </select>
           <button className="button" type="submit" onClick={ this._handleSubmit }>Create</button>
         </form>
         <Link to="/login">Login</Link>

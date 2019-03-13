@@ -6,14 +6,19 @@ import { ToastContainer, toast } from 'react-toastify'
 
 
 import downloadFile from '../utils/downloadFile'
-import { fetchGet, fetchPost, fetchPatch, fetchDelete } from '../utils/http'
+import { 
+    fetchAll,
+    fetchGet,
+    fetchPost,
+    fetchPatch,
+    fetchDelete,
+} from '../utils/http'
 
 
 const defaultPageOptions = {
     page: 0,
     pageSize: 10,
 }
-
 
 class EditUserForm  extends React.Component {
 
@@ -24,6 +29,7 @@ class EditUserForm  extends React.Component {
             lastName: props.formValues.lastName,
             email: props.formValues.email,
             isAdmin: props.formValues.isAdmin,
+            regionId: props.formValues.regionId,
         }
     }
 
@@ -43,13 +49,20 @@ class EditUserForm  extends React.Component {
             lastName,
             email,
             isAdmin,
+            regionId,
         } = this.state
+
+        const { regions } = this.props
 
         return (
             <form className="container container-center">
                 <input type="text" name="firstName" value={ firstName } placeholder="first name" onChange={ this.handleOnChange } autoComplete="off" />
                 <input type="text" name="lastName" value={ lastName } placeholder="last name" onChange={ this.handleOnChange } autoComplete="off"/>
                 <input type="email" name="email" value={ email } placeholder="email" onChange={ this.handleOnChange } autoComplete="off" />
+                <select name='regionId' value={regionId || ''} onChange={this.handleOnChange} > 
+                  <option key={0} value={''}>None</option>
+                  {regions.map(region => <option key={region.id} value={region.id}>{region.description}</option> )}
+                </select>
                 <div>
                     <label htmlFor="isAdmin">Is Admin</label>
                     <input id="isAdmin" name="isAdmin" type="checkbox" checked={ isAdmin || '' } onChange={ this.handleOnChange } />
@@ -64,13 +77,17 @@ class EditUserForm  extends React.Component {
     }
 }
 
-const CreateUserForm = ({ onChange, onSubmit, onClose }) => (
+const CreateUserForm = ({ onChange, onSubmit, onClose, regions }) => (
     <form className="container container-center">
         <input type="text" name="firstName" placeholder="First name" onChange={ onChange } autoComplete="off" />
         <input type="text" name="lastName" placeholder="Last name" onChange={ onChange } autoComplete="off"/>
         <input type="email" name="email" placeholder="Email" onChange={ onChange } autoComplete="off" />
         <input type="password" name="password" placeholder="Password" onChange={ onChange } autoComplete="off" />
         <input type="password" name="confirmPassword" placeholder="Confirm password" onChange={ onChange } autoComplete="off" />
+        <select name='regionId' onChange={ onChange } > 
+          <option key={0} value={''}>None</option>
+          {regions.map(region => <option key={region.id} value={region.id}>{region.description}</option> )}
+        </select>
         <div>
             <label htmlFor="isAdmin">Is Admin</label>
             <input id="isAdmin" name="isAdmin" type="checkbox" onChange={ onChange } placeholder="isAdmin" />
@@ -92,6 +109,15 @@ export default class AdminHome extends React.Component {
         totalPages: null,
         showModal: false,
         form: {},
+    }
+
+    componentDidMount() {
+        fetchAll('/api/regions')
+        .then((regions) => {
+            this.setState({
+                regions
+            })
+        })
     }
 
     openModal = (modalOptions) => {
@@ -116,15 +142,19 @@ export default class AdminHome extends React.Component {
             firstName: first_name,
             lastName: last_name,
             email,
+            regionId,
+            isAdmin,
         } = this.state.form
-
-        const is_admin = this.state.form.isAdmin ? 1 : 0
+        
+        const region = regionId === '0' || regionId === '' ? null : +regionId
+        const is_admin = isAdmin ? 1 : 0
 
         fetchPatch(`/api/users/${id}`, {
             first_name,
             last_name,
             email,
             is_admin,
+            region,
         })
         .then(() => {
             this.fetchData({
@@ -146,9 +176,11 @@ export default class AdminHome extends React.Component {
             lastName: last_name,
             email,
             password,
+            regionId,
         } = this.state.form
         
         const is_admin = this.state.form.isAdmin ? 1 : 0
+        const region = regionId === '0' || regionId === '' ? null : +regionId
 
         return fetchPost('/api/users', {
             first_name,
@@ -156,6 +188,7 @@ export default class AdminHome extends React.Component {
             email,
             is_admin,
             password,
+            region,
         })
         .then(() => {
             this.fetchData({
@@ -184,7 +217,7 @@ export default class AdminHome extends React.Component {
                 id: user.id,
                 ctime: user.ctime,
                 isAdmin: user.is_admin,
-                region: user.region,
+                regionId: user.region,
                 mtime: user.mtime,
             }))
 
@@ -194,8 +227,6 @@ export default class AdminHome extends React.Component {
                 pageSize: +options.pageSize,
                 totalPages: +data.pagination.total_pages,
             })
-
-            return users
         })
         .catch((err) => {
             this.showToast(err.message, { type: 'error' })
@@ -220,6 +251,10 @@ export default class AdminHome extends React.Component {
             {
                 display: 'Email',
                 key: 'email',
+            },
+            {
+                display: 'Region',
+                key: 'regionId',
             },
             {
                 display: 'Admin',
@@ -296,17 +331,24 @@ export default class AdminHome extends React.Component {
                 onChange={ this.handleFormFieldChange }
                 onSubmit={ this.submitCreateUser }
                 onClose={ this.closeModal }
+                regions={this.state.regions}
             />,
     })
 
     handleEditUserClick = () => {
+        const {
+            form,
+            regions,
+        } = this.state
+
         this.openModal({
             title: 'Edit User',
             form: <EditUserForm
                     onChange={ this.handleFormFieldChange }
                     onSubmit={ this.submitEditUser }
                     onClose={ this.closeModal }
-                    formValues={ this.state.form }
+                    formValues={ form }
+                    regions={ regions}
                 />,
         })
     }
@@ -318,8 +360,12 @@ export default class AdminHome extends React.Component {
             pageSize,
             totalPages,
             users,
+            regions,
         } = this.state
 
+        if (!regions) {
+            return <span>Loading...</span>
+        }
         return (
             <React.Fragment>
                 <button className="button" onClick={ this.handleCreateUserClick }>Create User</button>
@@ -346,6 +392,11 @@ export default class AdminHome extends React.Component {
                                     {
                                         Header: 'Email',
                                         accessor: 'email',
+                                    },
+                                    {
+                                        Header: 'Region',
+                                        accessor: 'regionId',
+                                        Cell: (row) => regions && row.value ? (regions.find(({id}) => id === row.value) || { description: 'none' }).description : 'none',
                                     },
                                     {
                                         Header: 'isAdmin',

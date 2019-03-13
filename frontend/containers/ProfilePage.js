@@ -1,5 +1,5 @@
 import React from 'react'
-import { fetchGet, fetchPatch } from '../utils/http'
+import { fetchAll, fetchGet, fetchPatch } from '../utils/http'
 import { ToastContainer, toast } from 'react-toastify'
 import Header from '../components/Header'
 import Modal from 'react-modal'
@@ -8,7 +8,8 @@ export default class ProfilePage extends React.Component {
 
     state = {
         shouldShowModal: false,
-        form: {}
+        form: {},
+        regions: null,
     }
 
     componentDidMount() {
@@ -16,13 +17,17 @@ export default class ProfilePage extends React.Component {
     }
 
     fetchData = () => {
-        return fetchGet('/api/users/me')
-        .then(({data}) => {
+        return Promise.all([
+            fetchGet('/api/users/me'),
+            fetchAll('/api/regions'),
+        ])
+        .then(([{ data }, regions]) => {
             this.setState({
                 email: data.email,
                 firstName: data.first_name,
                 lastName: data.last_name,
-                region: data.region,
+                regionId: data.region,
+                regions,
             })
         })
         .catch((err) => {
@@ -59,7 +64,7 @@ export default class ProfilePage extends React.Component {
     handleOnChange = (e) => {
         const name = e.target.name
         const value = e.target.value
-
+        
         this.setState((state) => ({
             form: {
                 ...state.form,
@@ -76,6 +81,7 @@ export default class ProfilePage extends React.Component {
                 firstName: first_name,
                 lastName: last_name,
                 email,
+                regionId,
             }
         } = this.state
 
@@ -83,6 +89,7 @@ export default class ProfilePage extends React.Component {
             first_name,
             last_name,
             email,
+            ...(regionId ? {region: +regionId} : {}),
         })
         .then(this.fetchData)
         .then(this.closeModal)
@@ -95,6 +102,8 @@ export default class ProfilePage extends React.Component {
         const { 
             shouldShowModal,
             form,
+            regionId,
+            regions,
         } = this.state
 
         if (!shouldShowModal) {
@@ -115,6 +124,13 @@ export default class ProfilePage extends React.Component {
                         <input type="text" name="firstName" value={ form.firstName } placeholder="first name" onChange={ this.handleOnChange } autoComplete="off" />
                         <input type="text" name="lastName" value={ form.lastName } placeholder="last name" onChange={ this.handleOnChange } autoComplete="off"/>
                         <input type="email" name="email" value={ form.email } placeholder="email" onChange={ this.handleOnChange } autoComplete="off" />
+                        {
+                            regions && regions.length ? (
+                                <select name='regionId' value={form.regionId} onChange={this.handleOnChange} > 
+                                  {regions.map(region => <option key={region.id} value={region.id}>{region.description}</option> )}
+                                </select>
+                            ) : null
+                        }
                         <div>
                             <button className="button" onClick={ this.handleSubmit }>Save</button>
                             <button className="button" onClick={ this.closeModal }>Close</button>
@@ -132,9 +148,17 @@ export default class ProfilePage extends React.Component {
             firstName,
             lastName,
             email,
-            region,
+            regionId,
+            regions,
         } = this.state
-        
+
+        let regionDescription
+        try {
+            regionDescription = regions.find(({id}) => regionId === id).description
+        } catch (err) {
+            regionDescription = 'none'
+        }
+
         return (
             <React.Fragment>
                 {!shouldShowModal ? <ToastContainer/> : null}
@@ -155,7 +179,7 @@ export default class ProfilePage extends React.Component {
                             </div>
                             <div className="padding-container-field">
                                 <div className="profile-container-label">Region:</div>
-                                <span className="profile-container-value">{region ? region : 'none'}</span>
+                                <span className="profile-container-value">{regionDescription}</span>
                             </div>
                         </div>
                     </div>

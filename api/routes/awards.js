@@ -11,6 +11,7 @@ const {
     INTERNAL_SERVER_ERROR,
 } = require('http-status-codes')
 const awardService = require('../../services/awards')
+const { assertIsNotAdmin } = require('../middleware/auth')
 
 const router = express.Router();
 
@@ -20,7 +21,7 @@ const router = express.Router();
     - "recipient": email address of the recipient
     - "granted": date the award will be granted, format = mm/dd/yyyy
        (defaults to current date if omitted) */
-router.post('/awards', (req, res) => {
+router.post('/awards', assertIsNotAdmin, (req, res) => {
     const params = {
         "type": req.body.type,
         "creator": req.body.creator,

@@ -122,19 +122,6 @@ function createAward(params) {
         granted: params.granted || now,
         ctime: now,
     }))
-    // .then(() => console.log("data inserted"))
-    //     .catch((err) => { console.log(err); throw err })
-    // console.log('Past the INSERT statement');
-    // return new Promise((resolve, reject) => {
-    //     val=1;
-    //     console.log('inside the promise, success = ' + val);
-    //     if(val) {
-    //         console.log('inside the conditional, success = ' + val);
-    //         resolve("AWARD")
-    //     } else {
-    //         reject("**no award**")
-    //     }
-    // })
 };
 
 async function selectAwardsByUser(userId, queryParams = {filter: []}, pageOptions = {}) {

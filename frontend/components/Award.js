@@ -1,55 +1,6 @@
 import React from 'react';
-import moment from 'moment';
-import { PDFDownloadLink, Page, Text, View, Document, StyleSheet, Font} from '@react-pdf/renderer';
-
-const styles = StyleSheet.create({
-  page: {
-    flexDirection: 'row',
-    backgroundColor: 'white'
-  },
-
-  container: {
-    backgroundColor: '#E2F9FA',
-    alignItems: 'center',
-    margin: 100,
-    padding: 100,
-    flexGrow: 1,
-    border: 3,
-    opacity: 5
-  },
-
-  message: {
-    fontFamily: 'Courier-Oblique',
-    paddingBottom: 25
-  },
-
-  header: {
-    fontFamily: 'Helvetica-Bold',
-    paddingBottom: 15
-  }
-});
-
-const createDoc = (props) => {
-  const {
-    awardType,
-    granted,
-    creator,
-    recipient,
-  } = props.award
-
-  const myDoc = (
-    <Document>
-      <Page style={styles.page} orientation='landscape' size='A4'>
-        <View style={styles.container}>
-          <Text style={styles.header}>Congratulations, {recipient.first_name} {recipient.last_name}!</Text>
-          <Text style={styles.message}>You've been awarded the {awardType.name} award by {creator.first_name} {creator.last_name}.</Text>
-          <Text style={styles.date}>{moment(granted).format('lll')}</Text>
-        </View>
-      </Page>
-    </Document>
-  )
-  return myDoc
-}
+import AwardPdf from './AwardPdf'
+import { PDFDownloadLink } from '@react-pdf/renderer';
 
 const Award = (props) => {
   const {
@@ -62,6 +13,13 @@ const Award = (props) => {
 
   if (!recipient) {
     return null
+  }
+
+  const awardPdfProps = {
+    awardTypeName: awardType.name,
+    granted,
+    creatorName: `${creator.first_name} ${creator.last_name}`,
+    recipientName: `${recipient.first_name} ${recipient.last_name}`,
   }
   
   return (
@@ -77,7 +35,7 @@ const Award = (props) => {
         Remove
       </button>
       <div>
-        <PDFDownloadLink document={createDoc(props)} fileName="example.pdf">
+        <PDFDownloadLink document={<AwardPdf {...awardPdfProps} />} fileName="example.pdf">
           {({ blob, url, loading, error }) => (loading ? 'Loading document...' : 'Download')}
         </PDFDownloadLink>
       </div>

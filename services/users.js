@@ -51,7 +51,7 @@ async function createUser(attrs) {
         ..._.pick(attrs, ['email', 'first_name', 'last_name', 'region', 'is_admin']),
         ...(await getPasswordSaltAndHash(attrs.password)),
     }, _.identity)
-
+    console.log(userAttrs)
     try {
         const [ id ] = await knex('users')
         .insert(userAttrs)
@@ -195,7 +195,7 @@ async function patchUserById(userId, userAttrs) {
         .where({ id: userId })
         .whereNull('dtime')
         .update({
-            ..._.pick(userAttrs, ['first_name', 'last_name', 'email', 'is_admin']),
+            ..._.pick(userAttrs, ['first_name', 'last_name', 'email', 'is_admin', 'region']),
             mtime: dateUtil.formatMySQLDatetime(now),
         })
     } catch (err) {

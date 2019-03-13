@@ -55,18 +55,16 @@ export default class AdminAwards extends React.Component {
         .then(([ _awardTypes, _awards ]) => {
             awardTypes = _awardTypes
             awards = _awards
-            console.log(awards)
+
             const ids = uniq(flatMap(awards.data, ({ creator, recipient }) => ([ creator, recipient ])))
-            
+
             if (isEmpty(ids)) {
                 return Promise.resolve([])
             }
 
             return fetchAll(`/api/users/?ids=${ids.join(',')}`)
         })
-        .then((users) => {
-            return formatAwards(awards, awardTypes, users)
-        })
+        .then((users) => formatAwards(awards, awardTypes, users))
         .then((fullAwards) => {
             this.setState({
                 page: +awards.pagination.page,

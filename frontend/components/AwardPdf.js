@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
 
   signature: {
     maxHeight: 100, 
-    maxWidth: 100
+    maxWidth: 100,
     //objectPosition: 'right'
   }
 });

@@ -5,7 +5,7 @@ import moment from 'moment'
 import React from 'react'
 import { render, Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer';
 import yargs from 'yargs'
-import AwardPdf from '../frontend/components/awardPdf'
+import AwardPdf from '../frontend/components/AwardPdf'
 
 const argv = yargs
 .options('filename', {

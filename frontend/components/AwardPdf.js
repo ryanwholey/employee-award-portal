@@ -93,6 +93,7 @@ const createDoc = (props) => {
         granted,
         creatorName,
         recipientName,
+        signatureUrl,
     } = props
 
     return (
@@ -102,7 +103,11 @@ const createDoc = (props) => {
             <Text style={styles.header}>Congratulations, {recipientName}!</Text>
             <Text style={styles.message}>You have been awarded the {awardTypeName} award by {creatorName}.</Text>
             <Text style={styles.date}>{moment(granted).format('lll')}</Text>
-            <Image style={styles.signature} src={ url: valid-url, method: 'GET', headers: {}, body: '' }/>
+            {
+              signatureUrl ? (
+                <Image style={styles.signature} src={{ url: signatureUrl, method: 'GET', headers: {}, body: '' }}/>
+              ) : null
+            }
           </View>
         </Page>
       </Document>

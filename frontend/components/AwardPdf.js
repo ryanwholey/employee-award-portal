@@ -1,6 +1,6 @@
-import React from 'react';
-import moment from 'moment';
-import { PDFDownloadLink, Page, Text, View, Document, StyleSheet, Font, Image } from '@react-pdf/renderer';
+// import React from 'react';
+// import moment from 'moment';
+// import { PDFDownloadLink, Page, Text, View, Document, StyleSheet, Font, Image } from '@react-pdf/renderer';
 
 // const styles = StyleSheet.create({
 //   page: {

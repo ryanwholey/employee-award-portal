@@ -14,6 +14,7 @@ export default class Signup extends React.Component {
     confirmPassword: '',
     firstName: '',
     lastName: '',
+    signature: null,
     errors: [],
     isFetching: true,
     regions: null,
@@ -56,6 +57,7 @@ export default class Signup extends React.Component {
       confirmPassword,
       firstName,
       lastName,
+      signature,
       regionId,
     } = this.state
 
@@ -83,6 +85,7 @@ export default class Signup extends React.Component {
       first_name: firstName,
       last_name: lastName,
       region,
+      signature
     })
     .then(() => {
       return fetchPost('/api/login_tokens', {
@@ -113,6 +116,7 @@ export default class Signup extends React.Component {
       isFetching,
       firstName,
       lastName,
+      signature,
       regions,
       regionId,
     } = this.state
@@ -167,6 +171,13 @@ export default class Signup extends React.Component {
             value={ lastName }
             onChange={ this._updateState }
             autoComplete="off" 
+          />
+          <input 
+            type='file'
+            name='signature'
+            value={ signature }
+            onChange={ this._updateState }
+            accept="image/png, image/jpeg"
           />
           <select name='regionId' value={regionId} onChange={this._updateState} > 
             {regions.map(region => <option key={region.id} value={region.id}>{region.description}</option> )}

@@ -168,8 +168,6 @@ async function getUserByEmailAndPassword(email, password) {
 
 async function getUserById(id) {
     await Joi.validate(id, idSchema)
-    console.log('id')
-    console.log(id)
     const user = await knex('users')
     .select(
         'id',

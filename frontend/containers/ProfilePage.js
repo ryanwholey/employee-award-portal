@@ -1,4 +1,5 @@
 import React from 'react'
+import getBase64 from '../utils/getBase64'
 import { fetchAll, fetchGet, fetchPatch } from '../utils/http'
 import { ToastContainer, toast } from 'react-toastify'
 import Header from '../components/Header'
@@ -10,6 +11,7 @@ export default class ProfilePage extends React.Component {
         shouldShowModal: false,
         form: {},
         regions: null,
+        signatureFileContent: null,
     }
 
     componentDidMount() {
@@ -27,6 +29,7 @@ export default class ProfilePage extends React.Component {
                 firstName: data.first_name,
                 lastName: data.last_name,
                 regionId: data.region,
+                signatureUrl: data.signature,
                 regions,
             })
         })
@@ -61,6 +64,15 @@ export default class ProfilePage extends React.Component {
         })
     }
 
+    handleFileUpload = (e) => {
+        return getBase64(e.target.files[0])
+        .then((imageContent) => {
+          this.setState({
+            signatureFileContent: imageContent,
+          })
+        })
+    }
+
     handleOnChange = (e) => {
         const name = e.target.name
         const value = e.target.value
@@ -82,7 +94,8 @@ export default class ProfilePage extends React.Component {
                 lastName: last_name,
                 email,
                 regionId,
-            }
+            },
+            signatureFileContent,
         } = this.state
 
         return fetchPatch('/api/users/me', {
@@ -90,9 +103,11 @@ export default class ProfilePage extends React.Component {
             last_name,
             email,
             ...(regionId ? {region: +regionId} : {}),
+            ...(signatureFileContent ? { signature_file_content: signatureFileContent } : {}),
         })
-        .then(this.fetchData)
-        .then(this.closeModal)
+        .then(() => {
+            window.location = '/profile'
+        })
         .catch((err) => {
             this.showToast(err.message, {type: 'error'})
         })
@@ -132,6 +147,16 @@ export default class ProfilePage extends React.Component {
                             ) : null
                         }
                         <div>
+                            <label htmlFor="signature" style={{ paddingRight: '10px' }}>Signature</label>
+                            <input 
+                                id="signature"
+                                type='file'
+                                name='signature'
+                                onChange={ this.handleFileUpload }
+                                accept="image/png, image/jpeg"
+                            />
+                        </div>
+                        <div>
                             <button className="button" onClick={ this.handleSubmit }>Save</button>
                             <button className="button" onClick={ this.closeModal }>Close</button>
                         </div>
@@ -150,8 +175,9 @@ export default class ProfilePage extends React.Component {
             email,
             regionId,
             regions,
+            signatureUrl,
         } = this.state
-
+        
         let regionDescription
         try {
             regionDescription = regions.find(({id}) => regionId === id).description
@@ -182,6 +208,11 @@ export default class ProfilePage extends React.Component {
                                 <span className="profile-container-value">{regionDescription}</span>
                             </div>
                         </div>
+                        { 
+                            signatureUrl ? (
+                                <img src={signatureUrl} style={{height: '200px', padding: '10px' }} />
+                            ): null 
+                        }
                     </div>
                     <button className="button" onClick={this.openModal}>Edit</button>
                 </div>

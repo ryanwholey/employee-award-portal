@@ -1,4 +1,6 @@
 const _ = require('lodash')
+const fs = require('fs')
+const path = require('path')
 const bodyParser = require('body-parser')
 const express = require('express')
 const morgan = require('morgan')
@@ -11,10 +13,23 @@ const scheduler = require('../bin/startEmailWorker');
 
 const app = express()
 
+const mediaSignaturesDir = path.resolve(__dirname, '../media/signatures')
+if (!fs.existsSync(mediaSignaturesDir)) {
+    fs.mkdirSync(mediaSignaturesDir)
+}
+const mediaAwardsDir = path.resolve(__dirname, '../media/awards')
+if (!fs.existsSync(mediaAwardsDir)){
+    fs.mkdirSync(mediaAwardsDir)
+}
+
 app.use(morgan(config.LOGGER_SETTINGS))
-app.use(bodyParser.json())
+app.use(bodyParser.json({
+    limit: '50mb',
+}))
 app.use(bodyParser.urlencoded({
-    extended: true
+    limit: '50mb',
+    extended: true,
+    parameterLimit: 50000,
 }))
 
 app.use(authMiddleware.convertTokenToUser)
@@ -23,6 +38,8 @@ if (config.NODE_ENV === 'development') {
     // disable caching in development
     app.set('etag', false)
 }
+
+app.use('/media/signatures', express.static(path.resolve(__dirname, '../media/signatures')))
 
 app.use(routes)
 

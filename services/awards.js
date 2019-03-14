@@ -132,7 +132,7 @@ async function createAward(params) {
         `--granted="${award.granted}"`,
         `--recipient-name="${recipient.first_name} ${recipient.last_name}"`,
         `--creator-name="${creator.first_name} ${creator.last_name}"`,
-        `--signature-url="http://fakeurl.com"`
+        `--signature-url="${creator.signature}"`,
     ]
 
     if (process.env.NODE_ENV !== 'test') {

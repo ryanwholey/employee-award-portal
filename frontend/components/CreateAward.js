@@ -38,13 +38,14 @@ export default class CreateAward extends React.Component {
         last_name: lastName,
         email,
         region,
+        signature,
       } = userRes.data
 
       this.setState({
         awards,
         awardTypes,
         isFetching: false,
-        user: { id, firstName, lastName, email, region },
+        user: { id, firstName, lastName, email, region, signature },
         users,
       })
     })
@@ -63,6 +64,12 @@ export default class CreateAward extends React.Component {
       recipient: award.recipientId,
       creator: award.creatorId,
       granted: moment(award.granted).format('YYYY-MM-DD HH:mm:ss'),
+    }
+    const { user } = this.state
+    
+    if (!user.signature) {
+      this.showToast('You must have a signature. Head to /profile to upload one.', {type: 'error'})
+      return
     }
     
     fetchPost('/api/awards', newAward)
@@ -107,6 +114,7 @@ export default class CreateAward extends React.Component {
       recipient: users.find((user) => user.id === award.recipient),
       creator: users.find((user) => user.id === award.creator),
       awardType: awardTypes.find((type) => type.id === award.type),
+      signatureUrl: users.find((user) => user.id === award.creator).signature,
     }))
 
     return (

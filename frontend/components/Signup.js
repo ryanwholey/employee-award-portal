@@ -1,5 +1,6 @@
 import React from 'react';
 import Cookies from 'universal-cookie'
+import getBase64 from '../utils/getBase64'
 import Header from './Header';
 import { fetchAll, fetchPost } from '../utils/http'
 import { Link } from 'react-router-dom'
@@ -14,7 +15,7 @@ export default class Signup extends React.Component {
     confirmPassword: '',
     firstName: '',
     lastName: '',
-    signature: null,
+    signatureFileContent: null,
     errors: [],
     isFetching: true,
     regions: null,
@@ -30,6 +31,15 @@ export default class Signup extends React.Component {
   _updateState = (e) => {
     this.setState({ 
       [e.target.name]: e.target.value
+    })
+  }
+
+  handleFileUpload = (e) => {
+    return getBase64(e.target.files[0])
+    .then((imageContent) => {
+      this.setState({
+        signatureFileContent: imageContent,
+      })
     })
   }
 
@@ -57,7 +67,7 @@ export default class Signup extends React.Component {
       confirmPassword,
       firstName,
       lastName,
-      signature,
+      signatureFileContent,
       regionId,
     } = this.state
 
@@ -85,7 +95,7 @@ export default class Signup extends React.Component {
       first_name: firstName,
       last_name: lastName,
       region,
-      signature
+      signature_file_content: signatureFileContent,
     })
     .then(() => {
       return fetchPost('/api/login_tokens', {
@@ -116,7 +126,6 @@ export default class Signup extends React.Component {
       isFetching,
       firstName,
       lastName,
-      signature,
       regions,
       regionId,
     } = this.state
@@ -172,13 +181,16 @@ export default class Signup extends React.Component {
             onChange={ this._updateState }
             autoComplete="off" 
           />
-          <input 
-            type='file'
-            name='signature'
-            value={ signature }
-            onChange={ this._updateState }
-            accept="image/png, image/jpeg"
-          />
+          <div>
+              <label htmlFor="signature" style={{ paddingRight: '10px' }}>Signature</label>
+              <input 
+                  id="signature"
+                  type='file'
+                  name='signature'
+                  onChange={ this.handleFileUpload }
+                  accept="image/png, image/jpeg"
+              />
+          </div>
           <select name='regionId' value={regionId} onChange={this._updateState} > 
             {regions.map(region => <option key={region.id} value={region.id}>{region.description}</option> )}
           </select>

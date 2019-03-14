@@ -47,9 +47,6 @@ const props = _.pick(argv, [
     'creatorName',
     'signatureUrl',
 ])
-
+props.signatureUrl = path.join(__dirname, '../', props.signatureUrl) 
 const mediaAwardsDir = path.resolve(__dirname, '../media/awards')
-if (!fs.existsSync(mediaAwardsDir)){
-    fs.mkdirSync(mediaAwardsDir)
-}
-render(<AwardPdf {...props} />, path.join(mediaAwardsDir, `${argv.filename}.pdf`))
+render(<AwardPdf {...props } />, path.join(mediaAwardsDir, `${argv.filename}.pdf`))

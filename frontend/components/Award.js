@@ -9,6 +9,7 @@ const Award = (props) => {
     awardType,
     id,
     granted,
+    signatureUrl,
   } = props.award
 
   if (!recipient) {
@@ -20,6 +21,7 @@ const Award = (props) => {
     granted,
     creatorName: `${creator.first_name} ${creator.last_name}`,
     recipientName: `${recipient.first_name} ${recipient.last_name}`,
+    signatureUrl,
   }
   
   return (
@@ -35,7 +37,7 @@ const Award = (props) => {
         Remove
       </button>
       <div>
-        <PDFDownloadLink document={<AwardPdf {...awardPdfProps} />} fileName="example.pdf">
+        <PDFDownloadLink document={<AwardPdf {...awardPdfProps} />} fileName="award.pdf">
           {({ blob, url, loading, error }) => (loading ? 'Loading document...' : 'Download')}
         </PDFDownloadLink>
       </div>

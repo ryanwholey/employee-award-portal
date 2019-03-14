@@ -1,4 +1,6 @@
 const _ = require('lodash')
+const fs = require('fs')
+const path = require('path')
 const bcrypt = require('bcrypt')
 const Joi = require('joi')
 const moment = require('moment')
@@ -8,14 +10,7 @@ const dateUtil = require('../utils/date')
 const { NotFoundError, DuplicateEntryError } = require('./errors')
 
 const idSchema = Joi.number().label('id')
-const createUserSchema = Joi.object().keys({
-    email: Joi.string().email({ minDomainAtoms: 2 }).label('email'),
-    first_name: Joi.string().required().label('first_name'),
-    last_name: Joi.string().required().label('last_name'),
-    password: Joi.string().required().label('password'),
-    is_admin: Joi.number().valid([0, 1]).label('is_admin'),
-    region: [ Joi.number().label('region'), Joi.allow(null) ],
-})
+
 
 function returnUserObject(attrs) {
     const userAttrs = _.pick(attrs, [
@@ -24,6 +19,8 @@ function returnUserObject(attrs) {
         'last_name',
         'region',
         'email',
+        'signature',
+        'ctime'
     ])
 
     const defaultContainer = {
@@ -44,19 +41,75 @@ async function changePassword(userId, password) {
     .update(passwordFields)
 }
 
-async function createUser(attrs) {
-    await Joi.validate(attrs, createUserSchema)
+function parseImage(base64Data) {
+    if (!base64Data) {
+        return
+    }
+    const pivot = base64Data.indexOf(',')
+    const protocol = base64Data.slice(0, pivot)
+    const data = base64Data.slice(pivot + 1)
+    const extension = protocol.split('/')[1].split(';')[0]
 
+    return {
+        extension,
+        data,
+    }
+}
+
+function saveSignature(parsedImage, userId, cb) {
+    if (!parsedImage) {
+        return
+    }
+
+    const mediaSignaturesDir = path.resolve(__dirname, '../media/signatures')
+    const fileName = path.join(mediaSignaturesDir, `${userId}.${parsedImage.extension}`)
+
+    fs.writeFile(fileName, parsedImage.data, 'base64', function(err) {
+        if (err) {
+            console.log(err)
+        }
+        cb && cb()
+    })
+}
+
+async function createUser(attrs) {
+    await Joi.validate(attrs, Joi.object().keys({
+        email: Joi.string().email({ minDomainAtoms: 2 }).label('email'),
+        first_name: Joi.string().required().label('first_name'),
+        last_name: Joi.string().required().label('last_name'),
+        password: Joi.string().required().label('password'),
+        is_admin: Joi.number().valid([0, 1]).label('is_admin'),
+        region: [ Joi.number().label('region'), Joi.allow(null) ],
+        signature_file_content: Joi.any().allow(null),
+    }))
+    
     const userAttrs = _.pickBy({
         ..._.pick(attrs, ['email', 'first_name', 'last_name', 'region', 'is_admin']),
         ...(await getPasswordSaltAndHash(attrs.password)),
     }, _.identity)
-    console.log(userAttrs)
+    
     try {
         const [ id ] = await knex('users')
         .insert(userAttrs)
 
-        return returnUserObject({ id, ...attrs})
+        const parsedImage = parseImage(attrs.signature_file_content)
+        // don't "await" wait for decoding and saving (too slow)
+        if (parsedImage) {
+            await new Promise((res, rej) => {
+                saveSignature(parsedImage, id, async () => {
+                    res()
+                })
+            })
+            await knex('users')
+            .insert({
+                signature: `/media/signatures/${id}.${parsedImage.extension}`
+            })
+
+            return returnUserObject({ id, ...attrs})
+        } else {
+            return returnUserObject({ id, ...attrs})
+        }
+
     } catch (err) {
         if (err.code === 'ER_DUP_ENTRY') {
             throw new DuplicateEntryError()
@@ -114,7 +167,8 @@ async function getUserByEmailAndPassword(email, password) {
 
 async function getUserById(id) {
     await Joi.validate(id, idSchema)
-
+    console.log('id')
+    console.log(id)
     const user = await knex('users')
     .select(
         'id',
@@ -123,6 +177,8 @@ async function getUserById(id) {
         'last_name',
         'is_admin',
         'region',
+        'signature',
+        'ctime',
     )
     .where({ id })
     .whereNull('dtime')
@@ -167,7 +223,7 @@ async function getUsers(queryParams = {}, pageOptions = {}) {
     }
     const offset = (pageSize * page) - pageSize
     const query = knex('users')
-    .select(['ctime', 'first_name', 'last_name', 'is_admin', 'id', 'region', 'mtime', 'email'])
+    .select(['ctime', 'first_name', 'last_name', 'is_admin', 'id', 'region', 'mtime', 'email', 'signature'])
     .offset(offset)
     .limit(pageSize)
     .whereNull('dtime')
@@ -191,11 +247,17 @@ async function patchUserById(userId, userAttrs) {
     const now = moment(new Date())
 
     try {
+        const parsedImage = parseImage(userAttrs.signature_file_content)
+        if (parsedImage) {
+            saveSignature(parsedImage, userId)
+        }
+
         return await knex('users')
         .where({ id: userId })
         .whereNull('dtime')
         .update({
             ..._.pick(userAttrs, ['first_name', 'last_name', 'email', 'is_admin', 'region']),
+            ...(parsedImage ? { signature: `/media/signatures/${userId}.${parsedImage.extension}`}: {}),
             mtime: dateUtil.formatMySQLDatetime(now),
         })
     } catch (err) {
@@ -222,7 +284,6 @@ async function deleteUserById(userId) {
 module.exports = {
     changePassword,
     createUser,
-    createUserSchema,
     deleteUserById,
     getPasswordSaltAndHash,
     getUserByEmail,

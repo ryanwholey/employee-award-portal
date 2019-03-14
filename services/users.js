@@ -101,7 +101,7 @@ async function createUser(attrs) {
                 })
             })
             await knex('users')
-            .insert({
+            .update({
                 signature: `/media/signatures/${id}.${parsedImage.extension}`
             })
 

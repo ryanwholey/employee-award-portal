@@ -12,7 +12,10 @@ services:
 
   api:
     build:
-      context: ../ 
+      context: ../
+    volumes:
+      - eap_awards:/api/media/awards
+      - eap_signatures:/api/media/awards
     ports:
       - "80:4000"
     environment:
@@ -22,3 +25,5 @@ services:
 
 volumes:
   db_data:
+  eap_awards:
+  eap_signatures:

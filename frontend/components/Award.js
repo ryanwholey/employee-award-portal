@@ -31,9 +31,9 @@ const Award = (props) => {
       id={awardType.name === 'Employee of the Month' ? 'EE_Month' : 'Sales'}  
     >
     <div id='AwardText'>
-      <nobr id='AwardTextItem'><b>Type: </b> {props.award.awardType.name}</nobr>
-      <nobr id='AwardTextItem'><b>Recipient: </b>{props.award.recipient.first_name} {props.award.recipient.last_name}</nobr>
-      <nobr id='AwardTextItem'><b>Date: </b>{props.award.granted}</nobr>
+      <nobr id='AwardTextItem'><b>Type: </b> {awardType.name}</nobr>
+      <nobr id='AwardTextItem'><b>Recipient: </b>{recipient.first_name} {recipient.last_name}</nobr>
+      <nobr id='AwardTextItem'><b>Date: </b>{granted}</nobr>
       <br></br>
     </div>
       <button className="button"

@@ -6,25 +6,23 @@
   background-clip: padding-box;  /* stops bg color from leaking outside the border: */
 }
 
-// .award-list {
-  
-// }
-
-// .scroller {
-
-// }
-
 .award-list__items {
+  flex-wrap: wrap;
   display: flex;
   flex-direction: column;
+
   //background: $color3;
 }
 
 .award-list__item {
   //background: lighten($color1, 25%);
+
   background: #FFB7B7;
   padding: $s-size;
-  margin-bottom: $s-size;
+  padding-top: $l-size;
+  padding-bottom: $m-size;
+  margin: $s-size;
+  background-image: linear-gradient(rgba(255,255,255,.8), rgba(255,255,255,0));
   @include border-radius(10px);
 }
 
@@ -38,4 +36,8 @@
   -moz-box-shadow:    inset 1px 1px 10px darken($color2, 10%);
   -webkit-box-shadow: inset 1px 1px 10px darken($color2, 10%);
   box-shadow:         inset 1px 1px 10px darken($color2, 10%);
+}
+
+#AwardText {
+  margin: $s-size;
 }

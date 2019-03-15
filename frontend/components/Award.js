@@ -30,7 +30,10 @@ const Award = (props) => {
       className='award-list__item'
       id={awardType.name === 'Employee of the Month' ? 'EE_Month' : 'Sales'}  
     >
-      <p>{awardType.name} : {recipient.first_name} {recipient.last_name} : {recipient.email} : {granted}</p>
+      <nobr id='AwardText'><b>Type: </b> {props.award.awardType.name}</nobr>
+      <nobr id='AwardText'><b>Recipient: </b>{props.award.recipient}</nobr>
+      <nobr id='AwardText'><b>Date: </b>{props.award.granted}</nobr>
+      <br></br>
       <button className="button"
         onClick={(e) => props.handleDeleteAward(id)}
       >

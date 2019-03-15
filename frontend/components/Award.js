@@ -30,16 +30,18 @@ const Award = (props) => {
       className='award-list__item'
       id={awardType.name === 'Employee of the Month' ? 'EE_Month' : 'Sales'}  
     >
-      <nobr id='AwardText'><b>Type: </b> {props.award.awardType.name}</nobr>
-      <nobr id='AwardText'><b>Recipient: </b>{props.award.recipient}</nobr>
-      <nobr id='AwardText'><b>Date: </b>{props.award.granted}</nobr>
+    <div id='AwardText'>
+      <nobr id='AwardTextItem'><b>Type: </b> {props.award.awardType.name}</nobr>
+      <nobr id='AwardTextItem'><b>Recipient: </b>{props.award.recipient.first_name} {props.award.recipient.last_name}</nobr>
+      <nobr id='AwardTextItem'><b>Date: </b>{props.award.granted}</nobr>
       <br></br>
+    </div>
       <button className="button"
         onClick={(e) => props.handleDeleteAward(id)}
       >
         Remove
       </button>
-      <div>
+      <div id='DownloadLink'>
         <PDFDownloadLink document={<AwardPdf {...awardPdfProps} />} fileName="award.pdf">
           {({ blob, url, loading, error }) => (loading ? 'Loading document...' : 'Download')}
         </PDFDownloadLink>

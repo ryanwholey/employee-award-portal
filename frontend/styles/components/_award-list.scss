@@ -10,18 +10,21 @@
   flex-wrap: wrap;
   display: flex;
   flex-direction: column;
+  align-items: left;
 
   //background: $color3;
 }
 
 .award-list__item {
   //background: lighten($color1, 25%);
-
   background: #FFB7B7;
   padding: $s-size;
   padding-top: $l-size;
   padding-bottom: $m-size;
   margin: $s-size;
+  margin-left: 0;
+  padding-left: 0;
+
   background-image: linear-gradient(rgba(255,255,255,.8), rgba(255,255,255,0));
   @include border-radius(10px);
 }
@@ -40,4 +43,13 @@
 
 #AwardText {
   margin: $s-size;
+}
+
+#AwardTextItem {
+  margin: $s-size;
+}
+
+#DownloadLink {
+  marginLeft: 10px;
+  padding: 10px;
 }

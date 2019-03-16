@@ -62,6 +62,12 @@ function scheduleAwards() {
         try {
             //Check if there is email to be sent
             const emails = await mailService.getMailToSend();
+            let result = emails.data;
+
+            for(var record=0;record<result.length;record++) {
+                let thisRecord = JSON.stringify(result[record]);
+                console.log("RECORD " + record + "= " + thisRecord);
+            }
 
         } catch (err) {
             if (err instanceof NotFoundError) {

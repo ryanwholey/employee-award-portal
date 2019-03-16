@@ -20,7 +20,7 @@ async function getMailToSend() {
 
     const subQ2 = knex('awards')
         .join('subQ1','subQ1.award','awards.id')
-        .select('awards.type','awards.creator','awards.recipient');
+        .select('subQ1.award','awards.type','awards.creator','awards.recipient');
 
     const toStringQ1 = subQ1.toString();
     console.log('EMAIL subQ1 = ' + toStringQ1);

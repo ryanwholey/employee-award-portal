@@ -10,6 +10,28 @@ async function scheduleMail(insertParams = {}) {
 }
 
 
+async function getMailToSend() {
+    console.log('Checking for mail to be sent');
+    const subQ1 = knex.select('award')
+        .from('emails')
+        .whereNull('sent')
+        .whereNull('dtime')
+        .as('subQ1');
+
+    const subQ2 = knex('awards')
+        .join('subQ1','subQ1.award','awards.id')
+        .select('awards.type','awards.creator','awards.recipient');
+
+    const toStringQ1 = subQ1.toString();
+    console.log('EMAIL subQ1 = ' + toStringQ1);
+    const toStringQ2 = subQ2.toString();
+    console.log('EMAIL subQ2 = ' + toStringQ2);
+
+
+}
+
+
 module.exports = {
     scheduleMail,
+    getMailToSend,
 }

@@ -49,4 +49,11 @@ To test the API, run
 To test the frontend, run
 `npm run frontend:test`
 
+#Deployments in Production Environments
+
+
+#ERRATA
+1. Console error message may be observed when no new awards have been created that need to be sent. This happens when the cron job runs and attempts to add records to the emails data table, but has no data to write. The issue does not affect functionality.
+
+
 

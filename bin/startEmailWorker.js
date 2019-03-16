@@ -9,7 +9,6 @@ const {
 
 function scheduleAwards() {
     cron.schedule("* * * * *", async function() {
-        //console.log('I did a thing at ' + moment(Date.now()).format('hh:mm:ss'));
         try {
             const awards = await awardService.selectAwardsToMail();
             if (awards.data.length > 0) {
@@ -20,16 +19,15 @@ function scheduleAwards() {
                     params[record].scheduled_time = params[record].granted;
                     params[record].award = params[record].id;
                     delete params[record].granted;
-                    delete params[record].id;
                     delete params[record].type;
                     delete params[record].creator;
                 }
                 console.log("REFACTORED ARRAY: " + JSON.stringify(params));
 
                 try {
-                    //const mailer = await mailService.scheduleMail(awards);
                     const mailer = await mailService.scheduleMail(params);
                     console.log('MAILER = ' + mailer);
+
                 } catch (err) {
                     if (err instanceof NotFoundError) {
                         console.log(JSON.stringify({error: err.message}));
@@ -38,9 +36,33 @@ function scheduleAwards() {
                 }
             }
 
-            console.log(JSON.stringify(awards));
+            //console.log(JSON.stringify(awards));
 
-            //res.status(200).json(awards)
+            try {
+                //Update award records to indicate they have been scheduled
+                let params = awards.data;
+                if (params.length > 0) {
+                    const updateAwards = await awardService.updateAwardScheduled(params);
+                }
+
+            } catch (err) {
+                if (err instanceof NotFoundError) {
+                    console.log(JSON.stringify({error: err.message}));
+                }
+                console.log(JSON.stringify({error: err.message}));
+            }
+
+        } catch (err) {
+            if (err instanceof NotFoundError) {
+                console.log(JSON.stringify({error: err.message}));
+            }
+            console.log(JSON.stringify({error: err.message}));
+        }
+
+        try {
+            //Check if there is email to be sent
+            const emails = await mailService.getMailToSend();
+
         } catch (err) {
             if (err instanceof NotFoundError) {
                 console.log(JSON.stringify({error: err.message}));

@@ -71,24 +71,48 @@ async function selectAwardsToMail() {
     const subQ1 = knex.select('*')
         .from('awards')
         .whereNull('dtime')
+        .where('scheduled','=',0)
         .whereRaw('TIMEDIFF(NOW(), granted) > 0')
         .as('beforeNow');
 
     const query2 = knex.select('beforeNow.id','beforeNow.type','beforeNow.creator','beforeNow.recipient',
         'beforeNow.granted')
         .from(subQ1)
-        .joinRaw('LEFT JOIN emails on beforeNow.id=emails.id')
-        .whereRaw('emails.id IS NULL');
+        .joinRaw('LEFT JOIN emails on beforeNow.id=emails.award')
+        .whereRaw('emails.award IS NULL');
 
     //DEBUGGING: will output the constructed sql query
-    /*const toStringQuery1 = query1.toString();
-    console.log('NEW QUERY = ' + toStringQuery1);
-    const toStringQuery2 = query2.toString();
-    console.log('BIG QUERY = ' + toStringQuery2);*/
+/*
+
+     const toStringQuery1 = subQ1.toString();
+     console.log('NEW QUERY = ' + toStringQuery1);
+     const toStringQuery2 = query2.toString();
+     console.log('BIG QUERY = ' + toStringQuery2);
+*/
+
 
     return {
         data: await query2,
     }
+}
+
+
+//Update award scheduled indicator
+async function updateAwardScheduled(params) {
+    //console.log("Trying to update awards.scheduled");
+
+    for(var record=0; record<params.length; record++) {
+        //console.log("AWARD ID TO UPDATE: " + params[record].id);
+        await updateAwardHelper(params[record].id);
+    }
+}
+
+async function updateAwardHelper(id) {
+    const query = knex('awards')
+        .where('id','=',id)
+        .update('scheduled',1);
+
+    return query;
 }
 
 
@@ -221,4 +245,5 @@ module.exports = {
     selectAwards,
     selectAwardsByUser,
     selectAwardsToMail,
+    updateAwardScheduled,
 }

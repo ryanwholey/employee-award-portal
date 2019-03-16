@@ -77,7 +77,7 @@ async function selectAwardsToMail() {
     const query2 = knex.select('beforeNow.id','beforeNow.type','beforeNow.creator','beforeNow.recipient',
         'beforeNow.granted')
         .from(subQ1)
-        .joinRaw('LEFT JOIN emails on beforeNow.id=emails.id')
+        .joinRaw('LEFT JOIN emails on beforeNow.id=emails.award')
         .whereRaw('emails.id IS NULL');
 
     //DEBUGGING: will output the constructed sql query

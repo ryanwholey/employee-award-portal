@@ -4,6 +4,7 @@ const { assertIsAdmin, assertIsAdminOrSelf } = require('../middleware/auth')
 const { 
     BAD_REQUEST,
     CONFLICT,
+    FORBIDDEN,
     INTERNAL_SERVER_ERROR,
     NOT_FOUND, 
     OK, 
@@ -77,6 +78,10 @@ router.get('/users', async (req, res) => {
 
 router.post('/users', async (req, res) => {
     try {
+        const isAdmin = _.get(req, 'user.is_admin')
+        if (!isAdmin && req.body['is_admin']) {
+            return res.status(BAD_REQUEST).json({ error: 'Cannot create admin user if creating user is not admin.' })
+        }
         const user = await userService.createUser(req.body)
 
         return res.status(OK).json(user)
@@ -107,6 +112,10 @@ router.patch('/users/:id', assertIsAdminOrSelf, async (req, res) => {
         let userId = req.params.id
         if (userId === 'me') {
             userId = req.user.id
+        }
+
+        if (req.body.is_admin && !req.user.isAdmin)  {
+            return res.status(FORBIDDEN).json({error: 'Cannot change admin status unless requester is admin.'})
         }
         const user = await userService.patchUserById(userId, req.body)
 

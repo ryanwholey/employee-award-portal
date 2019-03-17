@@ -52,12 +52,12 @@ async function assertIsAdmin(req, res, next) {
 async function assertIsAdminOrSelf(req, res, next) {
     const isAdmin = _.get(req, 'user.isAdmin')
     const userId = _.get(req, 'user.id')
-
+    
     let isSelf
     if (!userId) {
         isSelf = false
     } else {
-        isSelf = req.params.id === 'me' || req.params.id === userId
+        isSelf = req.params.id === 'me' || String(req.params.id) === String(userId)
     }
 
     if (isSelf || isAdmin) {

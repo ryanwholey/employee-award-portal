@@ -15,6 +15,7 @@ const idSchema = Joi.number().label('id')
 function returnUserObject(attrs) {
     const userAttrs = _.pick(attrs, [
         'id',
+        'is_admin',
         'first_name',
         'last_name',
         'region',

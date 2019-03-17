@@ -11,7 +11,6 @@ export default class NewAward extends React.Component {
       key: undefined,
       awardType: props.awardTypes[0].id,
       recipientId: props.users[0].id,
-      message: '',
       error: undefined,
       granted: new Date()
     }
@@ -40,7 +39,6 @@ export default class NewAward extends React.Component {
       creatorId: creator.id,
       recipientId: +recipientId,
       awardType: +awardType,
-      message: message,
       granted,
     }
     
@@ -63,7 +61,6 @@ export default class NewAward extends React.Component {
     } = this.props
     const {
       awardType,
-      message,
       error,
       recipientId,
       granted,
@@ -82,8 +79,6 @@ export default class NewAward extends React.Component {
               {users.map(user => <option key={user.id} value={user.id}>{user.email} - {user.first_name} {user.last_name}</option> )}
             </select>
             <Datetime defaultValue={granted} onChange={this.handleDateChange}/>
-            <input type='text' name='message' placeholder='Message' value={message} onChange={this.updateState}/>
-
             <button className='button'>
               Submit
             </button>

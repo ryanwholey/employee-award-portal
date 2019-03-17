@@ -1,6 +1,7 @@
 const knex = require('../db/knex');
 const _ = require('lodash');
 const moment = require('moment');
+const dateUtil = require('../utils/date');
 
 const { NotFoundError, DuplicateEntryError } = require('./errors')
 
@@ -47,8 +48,17 @@ async function getMailToSend() {
     }
 }
 
+async function updateSentMail(id) {
+    console.log('Updating emails.sent for email id ' + id);
+    const now = dateUtil.formatMySQLDatetime(moment(new Date()));
+    return knex('emails')
+        .where('id', '=', id)
+        .whereNull('sent')
+        .update('sent', now);
+}
 
 module.exports = {
     scheduleMail,
     getMailToSend,
+    updateSentMail,
 }

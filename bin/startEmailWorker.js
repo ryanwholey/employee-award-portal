@@ -2,6 +2,7 @@ const cron = require('node-cron')
 const moment = require('moment')
 const awardService = require('../services/awards')
 const mailService = require('../services/emails')
+const mailCertificate = require('../services/mailCertificate')
 const {
     DuplicateEntryError,
     NotFoundError,
@@ -64,9 +65,30 @@ function scheduleAwards() {
             const emails = await mailService.getMailToSend();
             let result = emails.data;
 
-            for(var record=0;record<result.length;record++) {
+            /*for(var record=0;record<result.length;record++) {
                 let thisRecord = JSON.stringify(result[record]);
                 console.log("RECORD " + record + "= " + thisRecord);
+            }*/
+            if(result.length > 0) {
+                try {
+                    //Try sending the emails
+                    console.log('I\'ll try sending the emails now');
+                    for (var record = 0; record < result.length; record++) {
+                        let emailParams = {
+                            "email": result[record].email, "recipient_name": result[record].recipient_name,
+                            "creator_name": result[record].creator_name, "name": result[record].name
+                        };
+                        //console.log("EMAIL PARAMS: " + JSON.stringify(emailParams));
+                        const emailSend = await mailCertificate.sendCertEmail(emailParams);
+                        let updated = await mailService.updateSentMail(result[record].email_id);
+                    }
+
+                } catch (err) {
+                    if (err instanceof NotFoundError) {
+                        console.log(JSON.stringify({error: err.message}));
+                    }
+                    console.log(JSON.stringify({error: err.message}));
+                }
             }
 
         } catch (err) {
@@ -75,18 +97,6 @@ function scheduleAwards() {
             }
             console.log(JSON.stringify({error: err.message}));
         }
-
-        try {
-            //Try sending the emails
-            console.log('I\'ll try sending the emails now');
-
-        } catch (err) {
-            if (err instanceof NotFoundError) {
-                console.log(JSON.stringify({error: err.message}));
-            }
-            console.log(JSON.stringify({error: err.message}));
-        }
-
     })
 }
 

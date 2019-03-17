@@ -16,12 +16,14 @@ async function getMailToSend() {
     let subQ1 = 'Select id AS email_id, award, recipient from emails where `dtime` is null and sent is null';
     let select2 = 'select `subQ1`.`email_id`,`subQ1`.`award`,`awards`.`type`,`awards`.`creator`,' +
         '`awards`.`recipient` from `awards` ';
-    let select3 = 'select `subQ2`.`email_id`,`subQ2`.`award`, `subQ2`.`type`, `subQ2`.`creator`, ' +
+    let select3 = 'select `subQ2`.`email_id`,`subQ2`.`award`, `subQ2`.`type`, `subQ2`.`creator`,' +
         'CONCAT(`users`.`first_name`, " ",`users`.`last_name`) AS `creator_name`, `subQ2`.`recipient` from `users` ';
     let select4 = 'select `subQ3`.`email_id`,`subQ3`.`award`,`subQ3`.`type`,`subQ3`.`creator`,`subQ3`.`creator_name`,' +
-        '`subQ3`.`recipient`,CONCAT(`users`.`first_name`," ",`users`.`last_name`) AS `recipient_name` from `users` ';
+        '`subQ3`.`recipient`, `users`.`email`, CONCAT(`users`.`first_name`," ",`users`.`last_name`) ' +
+        'AS `recipient_name` from `users` ';
     let finalSelect = 'select `subQ4`.`email_id`,`subQ4`.`award`, `subQ4`.`type`, `award_types`.`name`,' +
-        '`subQ4`.`creator`,`subQ4`.`creator_name`,`subQ4`.`recipient`,`subQ4`.`recipient_name` from `award_types` ';
+        '`subQ4`.`creator`,`subQ4`.`creator_name`,`subQ4`.`recipient`,`subQ4`.`email`,`subQ4`.`recipient_name` ' +
+        'from `award_types` ';
 
     const query = knex.raw(finalSelect +
         'inner join (' + select4 +

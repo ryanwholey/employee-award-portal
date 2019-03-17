@@ -75,6 +75,18 @@ function scheduleAwards() {
             }
             console.log(JSON.stringify({error: err.message}));
         }
+
+        try {
+            //Try sending the emails
+            console.log('I\'ll try sending the emails now');
+
+        } catch (err) {
+            if (err instanceof NotFoundError) {
+                console.log(JSON.stringify({error: err.message}));
+            }
+            console.log(JSON.stringify({error: err.message}));
+        }
+
     })
 }
 

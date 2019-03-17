@@ -72,7 +72,7 @@ async function selectAwardsToMail() {
         .from('awards')
         .whereNull('dtime')
         .where('scheduled','=',0)
-        .whereRaw('TIMEDIFF(NOW(), granted) > 0')
+        .whereRaw('(TIMEDIFF(NOW(), granted) > 0)')
         .as('beforeNow');
 
     const query2 = knex.select('beforeNow.id','beforeNow.type','beforeNow.creator','beforeNow.recipient',
@@ -82,13 +82,11 @@ async function selectAwardsToMail() {
         .whereRaw('emails.award IS NULL');
 
     //DEBUGGING: will output the constructed sql query
-/*
 
      const toStringQuery1 = subQ1.toString();
      console.log('NEW QUERY = ' + toStringQuery1);
      const toStringQuery2 = query2.toString();
      console.log('BIG QUERY = ' + toStringQuery2);
-*/
 
 
     return {

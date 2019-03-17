@@ -82,13 +82,7 @@ export default class Signup extends React.Component {
     } else {
       region = +regionId 
     }
-    console.log({
-      email,
-      password,
-      first_name: firstName,
-      last_name: lastName,
-      region,
-    })
+
     fetchPost('/api/users', {
       email,
       password,

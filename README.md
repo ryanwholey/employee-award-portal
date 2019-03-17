@@ -49,11 +49,11 @@ To test the API, run
 To test the frontend, run
 `npm run frontend:test`
 
-#Deployments in Production Environments
+# Deployments in Production Environments
 There are numerous potential scenarios for deployment, which cannot all be covered in this document. 
 
 
-#ERRATA
+# ERRATA
 1. Console error message may be observed when no new awards have been created that need to be sent. This happens when the cron job runs and attempts to add records to the emails data table, but has no data to write. The issue does not affect functionality.
 1. When scheduling an award for a time in the future, the time at which the award is sent may differ from user expectation. The backend database server calculates current time as UTC. Therefore the actual time the award certificate is emailed will differ from the time the user entered when creating the award, unless user takes this into account and schedules the award to be sent based on UTC time.
 

@@ -3,6 +3,8 @@ const moment = require('moment')
 const awardService = require('../services/awards')
 const mailService = require('../services/emails')
 const mailCertificate = require('../services/mailCertificate')
+const filer = require('../services/filer')
+const dateUtil = require('../utils/date')
 const {
     DuplicateEntryError,
     NotFoundError,
@@ -17,8 +19,11 @@ function scheduleAwards() {
 
                 let params = awards.data;
                 for(var record=0; record<params.length; record++){
+                    now = dateUtil.formatMySQLDatetime(moment(new Date()));
+
                     params[record].scheduled_time = params[record].granted;
                     params[record].award = params[record].id;
+                    params[record].ctime = now;
                     delete params[record].granted;
                     delete params[record].type;
                     delete params[record].creator;
@@ -73,7 +78,10 @@ function scheduleAwards() {
                 try {
                     //Try sending the emails
                     console.log('I\'ll try sending the emails now');
+                    let filename;
                     for (var record = 0; record < result.length; record++) {
+                        filename = result[record].award + '.pdf'
+                        //let attachment = await filer.getFileB64();
                         let emailParams = {
                             "email": result[record].email, "recipient_name": result[record].recipient_name,
                             "creator_name": result[record].creator_name, "name": result[record].name

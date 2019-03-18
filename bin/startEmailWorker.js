@@ -80,11 +80,15 @@ function scheduleAwards() {
                     console.log('I\'ll try sending the emails now');
                     let filename;
                     for (var record = 0; record < result.length; record++) {
-                        filename = result[record].award + '.pdf'
-                        //let attachment = await filer.getFileB64();
+                        filename = result[record].award + '.pdf';
+                        console.log("FILENAME: " + filename);
+                        let attachmentContent = await filer.getFileB64(filename);
+                        const attachmentData = [{"content": attachmentContent, "filename": filename,
+                            "type": 'plain/text', "disposition": 'attachment', "content_id": 'award'}];
                         let emailParams = {
                             "email": result[record].email, "recipient_name": result[record].recipient_name,
-                            "creator_name": result[record].creator_name, "name": result[record].name
+                            "creator_name": result[record].creator_name, "name": result[record].name,
+                            "attachment": attachmentData,
                         };
                         //console.log("EMAIL PARAMS: " + JSON.stringify(emailParams));
                         const emailSend = await mailCertificate.sendCertEmail(emailParams);

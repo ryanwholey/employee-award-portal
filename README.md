@@ -62,7 +62,7 @@ Some of the documentation that will be helpful to a developer using the Google C
 * [gcloud builds submit](https://cloud.google.com/sdk/gcloud/reference/builds/submit)
 * [About the Cloud SQL Proxy](https://cloud.google.com/sql/docs/mysql/sql-proxy)
 
-In the current project deployment model with the MySQL database being a standalone instance, we are utilizing Google CloudSQL. For the containerized application running on its VM, a VPC (Virtual Private Cloud) network must be configured with specific IP addressing parameters. Deployment of the database instance has not yet been scripted, although it can be, using the Google Cloud SDK; permitting developers to elaborate the current project to use try infrastructure as code.
+In the current project deployment model with the MySQL database being a standalone instance, we are utilizing Google CloudSQL. For the containerized application running on its VM, a VPC (Virtual Private Cloud) network must be configured with specific IP addressing parameters. Deployment of the database instance has not yet been scripted, although it can be, using the Google Cloud SDK; permitting developers to elaborate the current project to use true infrastructure as code.
 
 Various build processes can be employed, depending on developer preferences for tools and the chosen environment. The project is currently being deployed using the `gcloud` tool from the SDK to automatically deploy to the Google Container Registry. This approach requires establishment of a storage bucket with appropriately configured access permissions. Developers are again encouraged to consult the documentation for their chosen hosting provider.
 
